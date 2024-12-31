@@ -56,7 +56,7 @@ const Join = () => {
       // Get the cult ID from the invite
       const { data: invite } = await supabase
         .from('cult_invites')
-        .select('cult_id')
+        .select('cult_id, current_uses')
         .eq('code', code)
         .single();
 
@@ -79,11 +79,13 @@ const Join = () => {
 
       if (joinError) throw joinError;
 
-      // Increment the invite usage
-      await supabase
+      // Increment the invite usage using a regular update
+      const { error: updateError } = await supabase
         .from('cult_invites')
-        .update({ current_uses: supabase.sql`current_uses + 1` })
+        .update({ current_uses: (invite.current_uses || 0) + 1 })
         .eq('code', code);
+
+      if (updateError) throw updateError;
 
       toast({
         title: "Welcome to the cult!",
