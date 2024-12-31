@@ -10,35 +10,15 @@ export const Navbar = () => {
 
   const handleSignOut = async () => {
     try {
-      // First check if we have a session
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        // If no session, just redirect to home
-        navigate("/");
-        return;
-      }
-
-      // Proceed with sign out
-      const { error } = await supabase.auth.signOut();
-      if (error) {
-        console.error("Sign out error:", error);
-        toast({
-          title: "Error signing out",
-          description: error.message,
-          variant: "destructive",
-        });
-        return;
-      }
-
+      await supabase.auth.signOut();
       toast({
         title: "Signed out successfully",
         description: "You have been logged out.",
       });
-      navigate("/");
     } catch (error) {
       console.error("Sign out error:", error);
-      // If any error occurs, force navigate to home
+    } finally {
+      // Always navigate to home, regardless of success/failure
       navigate("/");
     }
   };
