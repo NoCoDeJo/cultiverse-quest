@@ -376,7 +376,12 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      calculate_worthiness_score: {
+        Args: {
+          profile_id: string
+        }
+        Returns: number
+      }
     }
     Enums: {
       [_ in never]: never
