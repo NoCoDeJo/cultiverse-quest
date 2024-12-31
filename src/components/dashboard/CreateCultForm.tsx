@@ -2,8 +2,8 @@ import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { FormFields } from "./cult-form/FormFields";
 import { useCreateCult } from "./cult-form/useCreateCult";
-import { Wand2 } from "lucide-react";
 import { useAIAssistant } from "@/hooks/useAIAssistant";
+import GenerateWithAIButton from "./cult-form/GenerateWithAIButton";
 
 interface CreateCultFormProps {
   onSuccess: () => void;
@@ -27,15 +27,7 @@ const CreateCultForm = ({ onSuccess }: CreateCultFormProps) => {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <div className="flex justify-end">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleGenerateInfo}
-            className="border-cultGlow text-cultWhite hover:bg-cultPurple/20"
-          >
-            <Wand2 className="mr-2 h-4 w-4" />
-            Generate with AI
-          </Button>
+          <GenerateWithAIButton onClick={handleGenerateInfo} />
         </div>
         <FormFields form={form} />
         <Button type="submit" className="w-full bg-cultGlow hover:bg-cultGlow/80">
