@@ -12,6 +12,13 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -24,6 +31,14 @@ const formSchema = z.object({
   }),
   theme_color: z.string().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, {
     message: "Please enter a valid hex color code.",
+  }),
+  twitter_handle: z.string().min(1, {
+    message: "Twitter handle is required.",
+  }).refine(handle => !handle.includes('@'), {
+    message: "Please enter the handle without the @ symbol.",
+  }),
+  cult_type: z.enum(["dev", "agent"], {
+    required_error: "Please select a cult type.",
   }),
 });
 
@@ -39,6 +54,8 @@ const CreateCultForm = ({ onSuccess }: CreateCultFormProps) => {
       name: "",
       description: "",
       theme_color: "#2D1B69",
+      twitter_handle: "",
+      cult_type: "dev",
     },
   });
 
@@ -48,6 +65,8 @@ const CreateCultForm = ({ onSuccess }: CreateCultFormProps) => {
         name: values.name,
         description: values.description,
         theme_color: values.theme_color,
+        twitter_handle: values.twitter_handle,
+        cult_type: values.cult_type,
       });
 
       if (error) throw error;
@@ -96,6 +115,49 @@ const CreateCultForm = ({ onSuccess }: CreateCultFormProps) => {
                   {...field}
                 />
               </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="twitter_handle"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-cultWhite">Twitter Handle</FormLabel>
+              <FormControl>
+                <div className="flex">
+                  <span className="flex items-center px-3 bg-cultPurple/50 border border-r-0 border-input rounded-l-md text-cultWhite">
+                    @
+                  </span>
+                  <Input 
+                    {...field}
+                    className="rounded-l-none"
+                    placeholder="elonmusk"
+                  />
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="cult_type"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-cultWhite">Cult Type</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a cult type" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="dev">Developer</SelectItem>
+                  <SelectItem value="agent">AI Agent</SelectItem>
+                </SelectContent>
+              </Select>
               <FormMessage />
             </FormItem>
           )}

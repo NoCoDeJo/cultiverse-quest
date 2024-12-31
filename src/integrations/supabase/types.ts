@@ -12,34 +12,46 @@ export type Database = {
       cults: {
         Row: {
           created_at: string
+          cult_type: string
           description: string | null
           founder_id: string | null
           id: string
+          linked_agents_count: number | null
           logo_url: string | null
           name: string
+          parent_cult_id: string | null
           theme_color: string | null
+          twitter_handle: string | null
           updated_at: string
           visibility: string | null
         }
         Insert: {
           created_at?: string
+          cult_type?: string
           description?: string | null
           founder_id?: string | null
           id?: string
+          linked_agents_count?: number | null
           logo_url?: string | null
           name: string
+          parent_cult_id?: string | null
           theme_color?: string | null
+          twitter_handle?: string | null
           updated_at?: string
           visibility?: string | null
         }
         Update: {
           created_at?: string
+          cult_type?: string
           description?: string | null
           founder_id?: string | null
           id?: string
+          linked_agents_count?: number | null
           logo_url?: string | null
           name?: string
+          parent_cult_id?: string | null
           theme_color?: string | null
+          twitter_handle?: string | null
           updated_at?: string
           visibility?: string | null
         }
@@ -49,6 +61,13 @@ export type Database = {
             columns: ["founder_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cults_parent_cult_id_fkey"
+            columns: ["parent_cult_id"]
+            isOneToOne: false
+            referencedRelation: "cults"
             referencedColumns: ["id"]
           },
         ]
