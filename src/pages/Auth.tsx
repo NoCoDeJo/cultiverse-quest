@@ -101,7 +101,8 @@ const AuthPage = () => {
             },
           }}
           providers={["twitter"]}
-          redirectTo={`${window.location.origin}/landing`}
+          redirectTo={window.location.origin}
+          view="sign_in"
         />
       </div>
     </div>
