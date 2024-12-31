@@ -1,5 +1,6 @@
 import { useAI } from "./useAI";
 import { useToast } from "./use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 export const useAIAssistant = () => {
   const { generateWithAI } = useAI();
@@ -24,6 +25,38 @@ export const useAIAssistant = () => {
       toast({
         title: "Error",
         description: "Failed to generate cult information",
+        variant: "destructive",
+      });
+      return null;
+    }
+  };
+
+  const generateFromTwitter = async (username: string) => {
+    try {
+      const { data: twitterData, error } = await supabase.functions.invoke('twitter-auth', {
+        body: { username },
+      });
+
+      if (error) throw error;
+      if (!twitterData?.data?.data) throw new Error("No Twitter data found");
+
+      const userData = twitterData.data.data;
+      
+      // Generate a cult name based on the Twitter profile
+      const namePrompt = `Generate a mystical cult name based on this Twitter bio: "${userData.description}". Return just the name, no explanation.`;
+      const cultName = await generateWithAI(namePrompt);
+
+      return {
+        name: cultName || `Cult of ${userData.name}`,
+        description: userData.description || "A mysterious cult born from the digital realm",
+        theme_color: "#2D1B69", // Default theme color
+        twitter_handle: username,
+      };
+    } catch (error) {
+      console.error("Error generating from Twitter:", error);
+      toast({
+        title: "Error",
+        description: "Failed to fetch Twitter information",
         variant: "destructive",
       });
       return null;
@@ -72,5 +105,6 @@ export const useAIAssistant = () => {
     generateCultInfo,
     generateDescription,
     generateLandingContent,
+    generateFromTwitter,
   };
 };
