@@ -32,8 +32,9 @@ export const useAIAssistant = () => {
 
   const generateDescription = async (topic: string) => {
     try {
-      const prompt = `Write a compelling 2-3 sentence description for a cult focused on: ${topic}`;
+      const prompt = `Write a compelling 2-3 sentence description for ${topic}. Make it mystical and engaging.`;
       const response = await generateWithAI(prompt);
+      if (!response) throw new Error("No response from AI");
       return response;
     } catch (error) {
       console.error("Error generating description:", error);
