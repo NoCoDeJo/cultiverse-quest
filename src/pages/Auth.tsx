@@ -44,16 +44,6 @@ const AuthPage = () => {
         });
         navigate("/");
       }
-
-      // Log any errors that occur during authentication
-      if (session?.error) {
-        console.error("Auth error:", session.error);
-        toast({
-          variant: "destructive",
-          title: "Authentication Error",
-          description: session.error.message,
-        });
-      }
     });
 
     checkUser();
