@@ -10,6 +10,30 @@ interface AgentListProps {
   cultId: string;
 }
 
+interface AgentCapabilities {
+  modelProvider?: string;
+  imageModelProvider?: string;
+  topics?: string[];
+  messageExamples?: Array<Array<{
+    user: string;
+    content: {
+      text: string;
+    };
+  }>>;
+  postExamples?: string[];
+  style?: {
+    all: string[];
+    chat: string[];
+    post: string[];
+  };
+  settings?: {
+    voice?: {
+      model?: string;
+    };
+    secrets?: Record<string, string>;
+  };
+}
+
 export const AgentList = ({ cultId }: AgentListProps) => {
   const { toast } = useToast();
 
@@ -71,7 +95,7 @@ export const AgentList = ({ cultId }: AgentListProps) => {
                   <div className="flex items-center gap-2">
                     <h3 className="text-cultWhite font-medium">{agent.name}</h3>
                     <Badge variant="secondary" className="text-xs">
-                      {agent.capabilities?.modelProvider || 'AI Agent'}
+                      {(agent.capabilities as AgentCapabilities)?.modelProvider || 'AI Agent'}
                     </Badge>
                   </div>
                   {agent.description && (

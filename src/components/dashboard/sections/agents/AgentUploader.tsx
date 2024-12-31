@@ -68,21 +68,30 @@ export const AgentUploader = ({ cultId, onSuccess }: AgentUploaderProps) => {
         ...(agentConfig.style.all || [])
       ].join(', ');
 
+      // Convert the capabilities object to a JSON-compatible format
+      const capabilities = {
+        topics: agentConfig.topics,
+        modelProvider: agentConfig.modelProvider,
+        imageModelProvider: agentConfig.imageModelProvider,
+        messageExamples: agentConfig.messageExamples,
+        postExamples: agentConfig.postExamples,
+        style: agentConfig.style,
+        settings: {
+          voice: agentConfig.settings?.voice,
+          secrets: Object.fromEntries(
+            Object.entries(agentConfig.settings?.secrets || {})
+              .map(([key, value]) => [key, JSON.stringify(value)])
+          )
+        }
+      };
+
       const { error } = await supabase.from("cult_agents").insert({
         cult_id: cultId,
         name: agentConfig.name,
         description: description,
         personality: personality,
         knowledge: agentConfig.knowledge,
-        capabilities: {
-          topics: agentConfig.topics,
-          modelProvider: agentConfig.modelProvider,
-          imageModelProvider: agentConfig.imageModelProvider,
-          messageExamples: agentConfig.messageExamples,
-          postExamples: agentConfig.postExamples,
-          style: agentConfig.style,
-          settings: agentConfig.settings
-        },
+        capabilities: capabilities as any, // Type assertion needed due to Supabase's Json type limitations
       });
 
       if (error) throw error;
