@@ -54,7 +54,17 @@ const AuthPage = () => {
                   brandAccent: '#7c3aed',
                 }
               }
-            }
+            },
+            style: {
+              button: {
+                background: '#2D1B69',
+                borderColor: '#8A4FFF',
+                color: 'white',
+              },
+              anchor: {
+                color: '#8A4FFF',
+              },
+            },
           }}
           providers={["twitter"]}
           redirectTo={`${window.location.origin}/landing`}
