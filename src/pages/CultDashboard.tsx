@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { Cult } from "@/types/cult";
-import { ArrowLeft, Twitter, Settings, ImagePlus, Pencil } from "lucide-react";
+import { ArrowLeft, Twitter, Settings } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { QuickActions } from "@/components/dashboard/sections/QuickActions";
 import { ActivityFeed } from "@/components/dashboard/sections/ActivityFeed";
@@ -14,6 +14,7 @@ import { CultStats } from "@/components/dashboard/sections/CultStats";
 import { RitualSection } from "@/components/dashboard/sections/RitualSection";
 import { LinksSection } from "@/components/dashboard/sections/LinksSection";
 import { ImageManagement } from "@/components/dashboard/sections/ImageManagement";
+import { CommunityManagement } from "@/components/dashboard/sections/CommunityManagement";
 
 const CultDashboard = () => {
   const { cultId } = useParams();
@@ -132,6 +133,9 @@ const CultDashboard = () => {
                 <ImageManagement cult={cult} />
               </CardContent>
             </Card>
+
+            {/* Community Management */}
+            <CommunityManagement cultId={cult.id} />
 
             {/* Quick Actions */}
             <Card className="bg-cultDark/50 border-cultGlow">
