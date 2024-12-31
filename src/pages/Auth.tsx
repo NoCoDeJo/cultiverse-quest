@@ -104,9 +104,17 @@ const AuthPage = () => {
               },
             },
           }}
-          providers={["twitter"]}
+          providers={[]}
           redirectTo={redirectTo}
-          view="sign_in"
+          onError={(error) => {
+            console.error("Auth error:", error);
+            toast({
+              variant: "destructive",
+              title: "Authentication Error",
+              description: error.message,
+            });
+          }}
+          magicLink={false}
         />
       </div>
     </div>
