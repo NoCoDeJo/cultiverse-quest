@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { AuthError, AuthResponse } from "@supabase/supabase-js";
 
 const AuthPage = () => {
   const navigate = useNavigate();
@@ -28,35 +29,29 @@ const AuthPage = () => {
       }
     };
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log("Auth state changed:", event, session);
-      if (event === 'SIGNED_IN' && session) {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session) {
         toast({
           title: "Welcome!",
           description: "You have successfully signed in.",
         });
         navigate("/dashboard");
-      }
-      if (event === 'SIGNED_OUT') {
+      } else {
+        // Handle sign out or session expiration
         toast({
           title: "Signed out",
           description: "You have been signed out.",
         });
         navigate("/");
       }
-      // Add logging for other auth events
-      if (event === 'USER_UPDATED') {
-        console.log("User updated:", session);
-      }
-      if (event === 'TOKEN_REFRESHED') {
-        console.log("Token refreshed:", session);
-      }
-      if (event === 'USER_DELETED' || event === 'PASSWORD_RECOVERY') {
-        console.error("Auth event:", event, session);
+
+      // Log any errors that occur during authentication
+      if (session?.error) {
+        console.error("Auth error:", session.error);
         toast({
           variant: "destructive",
-          title: "Authentication Event",
-          description: `${event} event occurred`,
+          title: "Authentication Error",
+          description: session.error.message,
         });
       }
     });
