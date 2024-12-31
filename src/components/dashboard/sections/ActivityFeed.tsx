@@ -2,6 +2,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Activity, UserPlus, MessageSquare, Brain, Coins } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { formatDistanceToNow } from "date-fns";
 
 interface ActivityItem {
   id: string;
@@ -66,7 +67,7 @@ export const ActivityFeed = ({ cultId }: ActivityFeedProps) => {
               {getIconForActivity(activity.type)}
               <span>{activity.description}</span>
               <span className="text-sm text-cultWhite/60">
-                {new Date(activity.timestamp).toRelative()}
+                {formatDistanceToNow(new Date(activity.timestamp), { addSuffix: true })}
               </span>
             </div>
           ))

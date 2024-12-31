@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { UserPlus, MessageSquare, Share2, Brain, Coins, Robot } from "lucide-react";
+import { UserPlus, MessageSquare, Share2, Brain, Coins, Bot } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -78,7 +78,7 @@ export const QuickActions = ({ cultId, cultName }: QuickActionsProps) => {
         className="flex flex-col items-center gap-2 h-auto py-4 border-cultGlow text-cultWhite hover:bg-cultPurple/20"
         onClick={handleAIAgentCreation}
       >
-        <Robot className="h-6 w-6" />
+        <Bot className="h-6 w-6" />
         <span>Create AI Agent</span>
       </Button>
 

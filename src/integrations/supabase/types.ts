@@ -9,6 +9,51 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      cult_activities: {
+        Row: {
+          actor_id: string | null
+          cult_id: string
+          description: string
+          id: string
+          metadata: Json | null
+          timestamp: string
+          type: string
+        }
+        Insert: {
+          actor_id?: string | null
+          cult_id: string
+          description: string
+          id?: string
+          metadata?: Json | null
+          timestamp?: string
+          type: string
+        }
+        Update: {
+          actor_id?: string | null
+          cult_id?: string
+          description?: string
+          id?: string
+          metadata?: Json | null
+          timestamp?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cult_activities_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cult_activities_cult_id_fkey"
+            columns: ["cult_id"]
+            isOneToOne: false
+            referencedRelation: "cults"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cults: {
         Row: {
           created_at: string
