@@ -86,7 +86,7 @@ const AuthPage = () => {
             },
           }}
           providers={["twitter"]}
-          redirectTo="https://cultiverse-quest.vercel.app/landing"
+          redirectTo={window.location.origin + "/landing"}
           onlyThirdPartyProviders={true}
         />
       </div>
