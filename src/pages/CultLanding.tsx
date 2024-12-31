@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Link } from "lucide-react";
+import { Link, Twitter } from "lucide-react";
 import { LandingPageContent } from "@/types/landing";
 import { Cult } from "@/types/cult";
 
@@ -19,7 +19,13 @@ const CultLanding = () => {
         .single();
 
       if (error) throw error;
-      return data as Cult;
+      
+      // Ensure landing_page_content has the correct structure
+      const landingContent = data.landing_page_content as LandingPageContent || { sections: [] };
+      return {
+        ...data,
+        landing_page_content: landingContent
+      } as Cult;
     },
   });
 
@@ -43,8 +49,7 @@ const CultLanding = () => {
     );
   }
 
-  // Parse the landing_page_content as LandingPageContent
-  const landingContent = (cult.landing_page_content as LandingPageContent)?.sections || [];
+  const landingContent = cult.landing_page_content?.sections || [];
 
   return (
     <div 
