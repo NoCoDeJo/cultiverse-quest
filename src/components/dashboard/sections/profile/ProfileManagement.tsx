@@ -7,7 +7,7 @@ interface ProfileManagementProps {
   profile: Profile;
 }
 
-export const ProfileManagement = ({ profile }: ProfileManagementProps) => {
+const ProfileManagement: React.FC<ProfileManagementProps> = ({ profile }) => {
   return (
     <div className="space-y-6">
       <SacredNameEditor 
@@ -27,3 +27,5 @@ export const ProfileManagement = ({ profile }: ProfileManagementProps) => {
     </div>
   );
 };
+
+export default ProfileManagement;

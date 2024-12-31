@@ -6,7 +6,7 @@ interface ProfileCardProps {
   profile: Profile;
 }
 
-const ProfileCard = ({ profile }: ProfileCardProps) => (
+const ProfileCard: React.FC<ProfileCardProps> = ({ profile }) => (
   <Card className="bg-cultDark/80 border-cultGlow glow-border">
     <CardHeader>
       <div className="flex items-center gap-4">

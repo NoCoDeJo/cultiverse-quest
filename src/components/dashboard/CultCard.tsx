@@ -10,7 +10,7 @@ interface CultCardProps {
   onJoin: (cultId: string) => void;
 }
 
-const CultCard = ({ cult, onJoin }: CultCardProps) => {
+const CultCard: React.FC<CultCardProps> = ({ cult, onJoin }) => {
   const navigate = useNavigate();
 
   return (
