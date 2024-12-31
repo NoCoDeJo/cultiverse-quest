@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useAIAssistant } from "@/hooks/useAIAssistant";
 import { FormValues } from "./FormFields";
-import { X } from "lucide-react";
+import ChatMessage from "./chat/ChatMessage";
+import ChatInput from "./chat/ChatInput";
+import ActionButtons from "./chat/ActionButtons";
 
 interface OverseerConversationProps {
   onComplete: (values: Partial<FormValues>) => void;
@@ -87,72 +87,32 @@ const OverseerConversation = ({ onComplete }: OverseerConversationProps) => {
 
   return (
     <div className="space-y-4 text-cultWhite">
-      {/* Chat Container */}
       <div className="h-[300px] overflow-y-auto bg-cultDark/30 rounded-lg border border-cultGlow p-4 space-y-4">
         {messages.map((message, index) => (
-          <div
-            key={index}
-            className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"}`}
-          >
-            <div
-              className={`max-w-[80%] p-3 rounded-lg ${
-                message.sender === "user"
-                  ? "bg-cultGlow/20 text-right"
-                  : "bg-cultDark/50 border border-cultGlow"
-              }`}
-            >
-              <p className="font-mono">{message.text}</p>
-            </div>
-          </div>
+          <ChatMessage key={index} text={message.text} sender={message.sender} />
         ))}
         {isTyping && (
-          <div className="flex justify-start">
-            <div className="bg-cultDark/50 border border-cultGlow p-3 rounded-lg">
-              <p className="font-mono">
-                {currentText}
-                <span className="animate-pulse text-cultGlow">▊</span>
-              </p>
-            </div>
-          </div>
+          <ChatMessage 
+            text={currentText + "\u258A"} 
+            sender="overseer" 
+          />
         )}
       </div>
 
-      {/* Input Section */}
       {showInput && step === 1 && (
-        <div className="flex gap-2 animate-fade-in">
-          <Input
-            value={cultName}
-            onChange={(e) => setCultName(e.target.value)}
-            className="bg-cultDark/30 border-cultGlow text-cultWhite placeholder:text-cultWhite/50"
-            placeholder="Enter the name of your cult..."
-          />
-          <Button 
-            onClick={handleNameSubmit}
-            className="bg-cultGlow hover:bg-cultGlow/80 text-cultWhite whitespace-nowrap"
-            disabled={!cultName.trim()}
-          >
-            Submit Name
-          </Button>
-        </div>
+        <ChatInput
+          value={cultName}
+          onChange={setCultName}
+          onSubmit={handleNameSubmit}
+          placeholder="Enter the name of your cult..."
+        />
       )}
 
-      {/* AI Choice */}
       {showInput && step === 2 && (
-        <div className="flex gap-2 animate-fade-in">
-          <Button 
-            onClick={() => handleAIChoice(true)}
-            className="flex-1 bg-cultGlow hover:bg-cultGlow/80 text-cultWhite"
-          >
-            Consult the AI
-          </Button>
-          <Button 
-            onClick={() => handleAIChoice(false)}
-            className="flex-1 bg-cultDark border-cultGlow text-cultWhite hover:bg-cultPurple/20"
-            variant="outline"
-          >
-            Proceed Manually
-          </Button>
-        </div>
+        <ActionButtons
+          onAIConsult={() => handleAIChoice(true)}
+          onManualProceed={() => handleAIChoice(false)}
+        />
       )}
     </div>
   );
