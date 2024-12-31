@@ -29,15 +29,9 @@ export const Navbar = () => {
     try {
       setIsSigningOut(true);
       
-      // First try to sign out from all devices
-      const { error } = await supabase.auth.signOut();
+      // Clear local session without server validation
+      await supabase.auth.clearSession();
       
-      if (error) {
-        console.error("Global sign out failed, trying local sign out:", error);
-        // If global sign out fails, try local sign out
-        await supabase.auth.signOut({ scope: 'local' });
-      }
-
       // Force a page refresh to clear all state
       window.location.href = '/';
       
