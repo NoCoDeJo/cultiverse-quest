@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { getURL } from "@/utils/url";
 
 const AuthPage = () => {
   const navigate = useNavigate();
@@ -101,6 +102,7 @@ const AuthPage = () => {
             },
           }}
           providers={[]}
+          redirectTo={`${getURL()}auth/callback`}
         />
       </div>
     </div>
