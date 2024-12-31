@@ -100,62 +100,69 @@ const OverseerConversation = ({ onComplete }: OverseerConversationProps) => {
 
   return (
     <div className="space-y-4 text-cultWhite">
-      <div className="min-h-[100px] bg-cultDark/50 p-4 rounded-lg border border-cultGlow">
-        <p className="font-mono">
+      {/* Overseer's Message */}
+      <div className="min-h-[100px] bg-cultDark/50 p-4 rounded-lg border border-cultGlow shadow-lg backdrop-blur-sm">
+        <p className="font-mono text-lg">
           {currentText}
-          {isTyping && <span className="animate-pulse">▊</span>}
+          {isTyping && <span className="animate-pulse text-cultGlow">▊</span>}
         </p>
       </div>
 
+      {/* User's Response */}
       {userResponse && (
-        <div className="min-h-[60px] bg-cultPurple/20 p-4 rounded-lg border border-cultGlow">
-          <p className="font-mono text-right">
+        <div className="min-h-[60px] bg-cultPurple/20 p-4 rounded-lg border border-cultGlow shadow-lg backdrop-blur-sm">
+          <p className="font-mono text-right text-cultGlow">
             {userResponse}
           </p>
         </div>
       )}
 
+      {/* Input Section */}
       {showInput && step === 1 && (
         <div className="space-y-4 animate-fade-in">
+          {/* Mode Selection */}
           <div className="flex gap-2">
             <Button
               onClick={() => setInputMode("type")}
-              className={`flex-1 ${inputMode === "type" ? "bg-cultGlow" : "bg-cultDark border-cultGlow"}`}
+              className={`flex-1 ${inputMode === "type" ? "bg-cultGlow text-cultWhite" : "bg-cultDark border-cultGlow text-cultWhite hover:bg-cultPurple/20"}`}
               variant={inputMode === "type" ? "default" : "outline"}
             >
               Type Name
             </Button>
             <Button
               onClick={() => setInputMode("select")}
-              className={`flex-1 ${inputMode === "select" ? "bg-cultGlow" : "bg-cultDark border-cultGlow"}`}
+              className={`flex-1 ${inputMode === "select" ? "bg-cultGlow text-cultWhite" : "bg-cultDark border-cultGlow text-cultWhite hover:bg-cultPurple/20"}`}
               variant={inputMode === "select" ? "default" : "outline"}
             >
               Choose Name
             </Button>
           </div>
 
+          {/* Type Input */}
           {inputMode === "type" ? (
             <div className="space-y-2">
               <Input
                 value={cultName}
                 onChange={(e) => setCultName(e.target.value)}
-                className="bg-cultDark/30 border-cultGlow text-cultWhite"
+                className="bg-cultDark/30 border-cultGlow text-cultWhite placeholder:text-cultWhite/50"
                 placeholder="Enter the name of your cult..."
               />
               <Button 
                 onClick={handleNameSubmit}
-                className="w-full bg-cultGlow hover:bg-cultGlow/80"
+                className="w-full bg-cultGlow hover:bg-cultGlow/80 text-cultWhite"
+                disabled={!cultName.trim()}
               >
                 Submit Name
               </Button>
             </div>
           ) : (
+            /* Predefined Names */
             <div className="grid grid-cols-1 gap-2">
               {predefinedNames.map((name) => (
                 <Button
                   key={name}
                   onClick={() => handlePredefinedNameSelect(name)}
-                  className="w-full bg-cultDark border-cultGlow hover:bg-cultPurple/20"
+                  className="w-full bg-cultDark border-cultGlow text-cultWhite hover:bg-cultPurple/20 transition-colors"
                   variant="outline"
                 >
                   {name}
@@ -166,17 +173,18 @@ const OverseerConversation = ({ onComplete }: OverseerConversationProps) => {
         </div>
       )}
 
+      {/* AI Choice */}
       {showInput && step === 2 && (
         <div className="flex gap-2 animate-fade-in">
           <Button 
             onClick={() => handleAIChoice(true)}
-            className="flex-1 bg-cultGlow hover:bg-cultGlow/80"
+            className="flex-1 bg-cultGlow hover:bg-cultGlow/80 text-cultWhite"
           >
             Consult the AI
           </Button>
           <Button 
             onClick={() => handleAIChoice(false)}
-            className="flex-1 bg-cultDark border-cultGlow hover:bg-cultPurple/20"
+            className="flex-1 bg-cultDark border-cultGlow text-cultWhite hover:bg-cultPurple/20"
             variant="outline"
           >
             Proceed Manually
