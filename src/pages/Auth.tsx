@@ -5,15 +5,22 @@ import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const AuthPage = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   useEffect(() => {
     const checkUser = async () => {
       const { data: { session }, error } = await supabase.auth.getSession();
       if (error) {
         console.error("Error checking auth status:", error);
+        toast({
+          variant: "destructive",
+          title: "Authentication Error",
+          description: error.message,
+        });
         return;
       }
       if (session) {
@@ -21,17 +28,27 @@ const AuthPage = () => {
       }
     };
 
-    checkUser();
-
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       console.log("Auth state changed:", event, session);
-      if (session) {
+      if (event === 'SIGNED_IN' && session) {
+        toast({
+          title: "Welcome!",
+          description: "You have successfully signed in.",
+        });
         navigate("/dashboard");
+      }
+      if (event === 'SIGNED_OUT') {
+        toast({
+          title: "Signed out",
+          description: "You have been signed out.",
+        });
+        navigate("/");
       }
     });
 
+    checkUser();
     return () => subscription.unsubscribe();
-  }, [navigate]);
+  }, [navigate, toast]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 to-black p-4">
@@ -86,7 +103,7 @@ const AuthPage = () => {
             },
           }}
           providers={["twitter"]}
-          redirectTo={window.location.origin + "/landing"}
+          redirectTo={`${window.location.origin}/landing`}
           onlyThirdPartyProviders={true}
         />
       </div>
