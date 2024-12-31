@@ -1,3 +1,1 @@
-import { useToast, toast } from "@/hooks/use-toast";
-
-export { useToast, toast };
+// Remove this file since it's causing circular dependencies
