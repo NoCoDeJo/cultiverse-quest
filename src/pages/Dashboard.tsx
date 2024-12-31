@@ -32,37 +32,59 @@ const Dashboard = () => {
     const checkUser = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
+        console.log("Session:", session); // Debug log
+
         if (!session) {
           navigate("/auth");
           return;
         }
 
-        // Fetch profile data with retry logic
-        const fetchProfile = async (retryCount = 0) => {
-          const { data: profileData, error: profileError } = await supabase
+        // First, let's check if the profile exists
+        const { data: profileCheck, error: checkError } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', session.user.id);
+        
+        console.log("Profile check:", profileCheck, "Error:", checkError); // Debug log
+
+        // If profile doesn't exist, try to create it
+        if (!profileCheck || profileCheck.length === 0) {
+          console.log("No profile found, attempting to create..."); // Debug log
+          const { data: newProfile, error: createError } = await supabase
             .from('profiles')
-            .select('sacred_name, worthiness_score')
-            .eq('id', session.user.id)
-            .maybeSingle();
+            .insert([
+              {
+                id: session.user.id,
+                sacred_name: 'Unnamed Cultist',
+              }
+            ])
+            .select()
+            .single();
 
-          if (profileError) {
-            throw new Error("Failed to load profile");
+          console.log("Profile creation attempt:", newProfile, "Error:", createError); // Debug log
+
+          if (createError) {
+            throw new Error(`Failed to create profile: ${createError.message}`);
           }
+        }
 
-          if (!profileData && retryCount < 3) {
-            // Wait for a short delay before retrying
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            return fetchProfile(retryCount + 1);
-          }
+        // Now fetch the profile data
+        const { data: profileData, error: profileError } = await supabase
+          .from('profiles')
+          .select('sacred_name, worthiness_score')
+          .eq('id', session.user.id)
+          .maybeSingle();
 
-          if (!profileData) {
-            throw new Error("Profile not found. Please try signing out and in again.");
-          }
+        console.log("Final profile fetch:", profileData, "Error:", profileError); // Debug log
 
-          return profileData;
-        };
+        if (profileError) {
+          throw new Error(`Failed to load profile: ${profileError.message}`);
+        }
 
-        const profileData = await fetchProfile();
+        if (!profileData) {
+          throw new Error("Profile still not found after creation attempt. Please contact support.");
+        }
+
         setProfile(profileData);
 
         // Fetch available cults
@@ -82,6 +104,7 @@ const Dashboard = () => {
         }
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : "An unexpected error occurred";
+        console.error("Dashboard error:", err); // Debug log
         setError(errorMessage);
         toast({
           title: "Error",
