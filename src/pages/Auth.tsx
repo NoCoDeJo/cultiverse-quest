@@ -64,6 +64,20 @@ const AuthPage = () => {
               anchor: {
                 color: '#8A4FFF',
               },
+              container: {
+                color: 'white',
+              },
+              divider: {
+                background: 'rgba(255, 255, 255, 0.1)',
+              },
+              label: {
+                color: 'white',
+              },
+              input: {
+                backgroundColor: 'rgba(45, 27, 105, 0.3)',
+                borderColor: '#8A4FFF',
+                color: 'white',
+              },
             },
           }}
           providers={["twitter"]}
