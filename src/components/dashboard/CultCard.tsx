@@ -58,6 +58,18 @@ const CultCard: React.FC<CultCardProps> = ({ cult, onJoin }) => {
   const hasPendingApplication = !!pendingApplication;
 
   const renderJoinButton = () => {
+    if (isFounder) {
+      return (
+        <Button 
+          variant="outline" 
+          className="flex-1 border-cultGlow text-cultWhite hover:bg-cultPurple/50"
+          onClick={() => navigate(`/cult/${cult.id}`)}
+        >
+          Manage
+        </Button>
+      );
+    }
+
     if (!session) {
       return (
         <Button 
@@ -71,8 +83,16 @@ const CultCard: React.FC<CultCardProps> = ({ cult, onJoin }) => {
       );
     }
 
-    if (isFounder || isMember) {
-      return null;
+    if (isMember) {
+      return (
+        <Button 
+          variant="outline" 
+          className="flex-1 border-cultGlow text-cultWhite hover:bg-cultPurple/50"
+          onClick={() => navigate(`/cult/${cult.id}`)}
+        >
+          View
+        </Button>
+      );
     }
 
     if (hasPendingApplication) {
@@ -179,15 +199,6 @@ const CultCard: React.FC<CultCardProps> = ({ cult, onJoin }) => {
         </div>
         <div className="flex gap-2">
           {renderJoinButton()}
-          {isFounder && (
-            <Button 
-              variant="outline" 
-              className="flex-1 border-cultGlow text-cultWhite hover:bg-cultPurple/50"
-              onClick={() => navigate(`/cult/${cult.id}`)}
-            >
-              Manage
-            </Button>
-          )}
         </div>
       </CardContent>
     </Card>
