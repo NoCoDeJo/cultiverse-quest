@@ -8,93 +8,93 @@ import { supabase } from "@/integrations/supabase/client";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 
-export const RaidSection = () => {
-  const [raidUrl, setRaidUrl] = useState("");
+export const RitualSection = () => {
+  const [ritualUrl, setRitualUrl] = useState("");
   const { cultId } = useParams();
   const { toast } = useToast();
 
-  const { data: activeRaid } = useQuery({
-    queryKey: ['activeRaid', cultId],
+  const { data: activeRitual } = useQuery({
+    queryKey: ['activeRitual', cultId],
     queryFn: async () => {
-      // First get the raid details
-      const { data: raid, error } = await supabase
-        .from('raids')
+      // First get the ritual details
+      const { data: ritual, error } = await supabase
+        .from('rituals')
         .select('*')
         .eq('cult_id', cultId)
         .eq('status', 'active')
         .maybeSingle();
 
       if (error) {
-        console.error('Error fetching active raid:', error);
+        console.error('Error fetching active ritual:', error);
         return null;
       }
 
-      if (!raid) return null;
+      if (!ritual) return null;
 
       // Then get the participant count separately
       const { count: participantCount } = await supabase
-        .from('raid_participants')
+        .from('ritual_participants')
         .select('*', { count: 'exact', head: true })
-        .eq('raid_id', raid.id);
+        .eq('ritual_id', ritual.id);
 
       return {
-        ...raid,
+        ...ritual,
         participant_count: participantCount || 0
       };
     },
   });
 
-  const handleRaid = async () => {
-    if (!raidUrl) {
+  const handleRitual = async () => {
+    if (!ritualUrl) {
       toast({
         title: "Error",
-        description: "Please enter a valid URL to raid",
+        description: "Please enter a valid URL for the ritual",
         variant: "destructive",
       });
       return;
     }
 
     try {
-      const { data: newRaid, error: raidError } = await supabase
-        .from('raids')
+      const { data: newRitual, error: ritualError } = await supabase
+        .from('rituals')
         .insert([
           {
             cult_id: cultId,
-            target_url: raidUrl,
+            target_url: ritualUrl,
             status: 'active'
           }
         ])
         .select()
         .single();
 
-      if (raidError) throw raidError;
+      if (ritualError) throw ritualError;
 
       toast({
-        title: "Raid Initiated!",
-        description: "Community members have been notified about the raid.",
+        title: "Ritual Initiated!",
+        description: "Community members have been notified about the ritual.",
       });
 
-      setRaidUrl("");
+      setRitualUrl("");
     } catch (error) {
-      console.error('Error creating raid:', error);
+      console.error('Error creating ritual:', error);
       toast({
         title: "Error",
-        description: "Failed to create raid. Please try again.",
+        description: "Failed to create ritual. Please try again.",
         variant: "destructive",
       });
     }
   };
 
-  const joinRaid = async (raidId: string) => {
+  const joinRitual = async (ritualId: string) => {
     try {
       const { data: userProfile } = await supabase.auth.getUser();
       if (!userProfile.user) throw new Error("Not authenticated");
 
       const { error: joinError } = await supabase
-        .from('raid_participants')
+        .from('ritual_participants')
         .insert([
           {
-            raid_id: raidId,
+            ritual_id: ritualId,
             profile_id: userProfile.user.id
           }
         ]);
@@ -102,14 +102,14 @@ export const RaidSection = () => {
       if (joinError) throw joinError;
 
       toast({
-        title: "Joined Raid!",
-        description: "You've successfully joined the raid. Let's make an impact!",
+        title: "Joined Ritual!",
+        description: "You've successfully joined the ritual. Let's channel our energy!",
       });
     } catch (error) {
-      console.error('Error joining raid:', error);
+      console.error('Error joining ritual:', error);
       toast({
         title: "Error",
-        description: "Failed to join raid. Please try again.",
+        description: "Failed to join ritual. Please try again.",
         variant: "destructive",
       });
     }
@@ -120,42 +120,42 @@ export const RaidSection = () => {
       <CardHeader>
         <CardTitle className="text-cultWhite flex items-center gap-2">
           <Users className="h-5 w-5" />
-          Community Raids
+          Community Rituals
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {activeRaid ? (
+        {activeRitual ? (
           <div className="p-4 border border-cultGlow rounded-lg">
-            <h3 className="text-cultWhite text-lg mb-2">Active Raid</h3>
-            <p className="text-cultWhite/80 mb-4">Target: {activeRaid.target_url}</p>
+            <h3 className="text-cultWhite text-lg mb-2">Active Ritual</h3>
+            <p className="text-cultWhite/80 mb-4">Target: {activeRitual.target_url}</p>
             <div className="flex items-center justify-between">
               <span className="text-cultWhite/60">
-                {activeRaid.participant_count} participants
+                {activeRitual.participant_count} participants
               </span>
               <Button
                 variant="outline"
                 className="border-cultGlow text-cultWhite hover:bg-cultPurple/20"
-                onClick={() => joinRaid(activeRaid.id)}
+                onClick={() => joinRitual(activeRitual.id)}
               >
-                Join Raid
+                Join Ritual
               </Button>
             </div>
           </div>
         ) : (
           <div className="flex gap-2">
             <Input
-              placeholder="Enter URL to raid (Twitter, Discord, etc.)"
-              value={raidUrl}
-              onChange={(e) => setRaidUrl(e.target.value)}
+              placeholder="Enter URL for ritual (Twitter, Discord, etc.)"
+              value={ritualUrl}
+              onChange={(e) => setRitualUrl(e.target.value)}
               className="bg-cultDark/30 border-cultGlow text-cultWhite"
             />
             <Button
               variant="outline"
               className="border-cultGlow text-cultWhite hover:bg-cultPurple/20"
-              onClick={handleRaid}
+              onClick={handleRitual}
             >
               <Share2 className="h-4 w-4 mr-2" />
-              Start Raid
+              Start Ritual
             </Button>
           </div>
         )}

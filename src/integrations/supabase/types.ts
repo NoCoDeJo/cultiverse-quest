@@ -141,27 +141,27 @@ export type Database = {
         }
         Relationships: []
       }
-      raid_participants: {
+      ritual_participants: {
         Row: {
           id: string
           joined_at: string
           points_earned: number | null
           profile_id: string
-          raid_id: string
+          ritual_id: string
         }
         Insert: {
           id?: string
           joined_at?: string
           points_earned?: number | null
           profile_id: string
-          raid_id: string
+          ritual_id: string
         }
         Update: {
           id?: string
           joined_at?: string
           points_earned?: number | null
           profile_id?: string
-          raid_id?: string
+          ritual_id?: string
         }
         Relationships: [
           {
@@ -172,15 +172,15 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "raid_participants_raid_id_fkey"
-            columns: ["raid_id"]
+            foreignKeyName: "ritual_participants_ritual_id_fkey"
+            columns: ["ritual_id"]
             isOneToOne: false
-            referencedRelation: "raids"
+            referencedRelation: "rituals"
             referencedColumns: ["id"]
           },
         ]
       }
-      raids: {
+      rituals: {
         Row: {
           created_at: string
           cult_id: string
