@@ -11,6 +11,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { QuickActions } from "@/components/dashboard/sections/QuickActions";
 import { ActivityFeed } from "@/components/dashboard/sections/ActivityFeed";
 import { CultStats } from "@/components/dashboard/sections/CultStats";
+import { RaidSection } from "@/components/dashboard/sections/RaidSection";
+import { LinksSection } from "@/components/dashboard/sections/LinksSection";
 
 const CultDashboard = () => {
   const { cultId } = useParams();
@@ -113,6 +115,9 @@ const CultDashboard = () => {
               </CardContent>
             </Card>
 
+            {/* Raid Section */}
+            <RaidSection />
+
             {/* Activity Feed */}
             <Card className="bg-cultDark/50 border-cultGlow">
               <CardHeader>
@@ -131,6 +136,9 @@ const CultDashboard = () => {
           <div className="space-y-6">
             {/* Cult Stats */}
             <CultStats cult={cult} />
+
+            {/* Links Section */}
+            <LinksSection />
 
             {/* Description */}
             <Card className="bg-cultDark/50 border-cultGlow">
