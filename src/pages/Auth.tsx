@@ -11,7 +11,11 @@ const AuthPage = () => {
 
   useEffect(() => {
     const checkUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (error) {
+        console.error("Error checking auth status:", error);
+        return;
+      }
       if (session) {
         navigate("/dashboard");
       }
@@ -19,7 +23,8 @@ const AuthPage = () => {
 
     checkUser();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("Auth state changed:", event, session);
       if (session) {
         navigate("/dashboard");
       }
@@ -27,8 +32,6 @@ const AuthPage = () => {
 
     return () => subscription.unsubscribe();
   }, [navigate]);
-
-  const redirectUrl = "https://cultiverse-quest.vercel.app/landing";
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 to-black p-4">
@@ -83,7 +86,7 @@ const AuthPage = () => {
             },
           }}
           providers={["twitter"]}
-          redirectTo={redirectUrl}
+          redirectTo="https://cultiverse-quest.vercel.app/landing"
           onlyThirdPartyProviders={true}
         />
       </div>
