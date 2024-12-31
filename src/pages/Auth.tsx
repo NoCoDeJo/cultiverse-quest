@@ -50,7 +50,7 @@ const AuthPage = () => {
 
   // Get the current URL for redirect
   const currentUrl = window.location.origin;
-  const redirectTo = `${currentUrl}/auth`;
+  const redirectTo = `${currentUrl}/auth/callback`;
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 to-black p-4">
