@@ -200,9 +200,11 @@ export type Database = {
           banner_url: string | null
           created_at: string
           cult_type: string
+          custom_url: string | null
           description: string | null
           founder_id: string | null
           id: string
+          landing_page_content: Json | null
           linked_agents_count: number | null
           logo_url: string | null
           name: string
@@ -216,9 +218,11 @@ export type Database = {
           banner_url?: string | null
           created_at?: string
           cult_type?: string
+          custom_url?: string | null
           description?: string | null
           founder_id?: string | null
           id?: string
+          landing_page_content?: Json | null
           linked_agents_count?: number | null
           logo_url?: string | null
           name: string
@@ -232,9 +236,11 @@ export type Database = {
           banner_url?: string | null
           created_at?: string
           cult_type?: string
+          custom_url?: string | null
           description?: string | null
           founder_id?: string | null
           id?: string
+          landing_page_content?: Json | null
           linked_agents_count?: number | null
           logo_url?: string | null
           name?: string

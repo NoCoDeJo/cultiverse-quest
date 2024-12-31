@@ -40,6 +40,13 @@ const formSchema = z.object({
   cult_type: z.enum(["dev", "agent"], {
     required_error: "Please select a cult type.",
   }),
+  custom_url: z.string()
+    .min(3, { message: "Custom URL must be at least 3 characters." })
+    .max(30, { message: "Custom URL cannot exceed 30 characters." })
+    .regex(/^[a-z0-9-]+$/, {
+      message: "Custom URL can only contain lowercase letters, numbers, and hyphens.",
+    })
+    .optional(),
 });
 
 interface CreateCultFormProps {
@@ -56,6 +63,7 @@ const CreateCultForm = ({ onSuccess }: CreateCultFormProps) => {
       theme_color: "#2D1B69",
       twitter_handle: "",
       cult_type: "dev",
+      custom_url: "",
     },
   });
 
@@ -67,6 +75,7 @@ const CreateCultForm = ({ onSuccess }: CreateCultFormProps) => {
         theme_color: values.theme_color,
         twitter_handle: values.twitter_handle,
         cult_type: values.cult_type,
+        custom_url: values.custom_url || null,
       });
 
       if (error) throw error;
@@ -114,6 +123,28 @@ const CreateCultForm = ({ onSuccess }: CreateCultFormProps) => {
                   placeholder="Describe your cult's purpose..."
                   {...field}
                 />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="custom_url"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-cultWhite">Custom URL</FormLabel>
+              <FormControl>
+                <div className="flex">
+                  <span className="flex items-center px-3 bg-cultPurple/50 border border-r-0 border-input rounded-l-md text-cultWhite">
+                    cult/
+                  </span>
+                  <Input 
+                    {...field}
+                    className="rounded-l-none"
+                    placeholder="your-cult-name"
+                  />
+                </div>
               </FormControl>
               <FormMessage />
             </FormItem>
