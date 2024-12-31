@@ -56,7 +56,7 @@ const AuthPage = () => {
               }
             }
           }}
-          providers={[]}
+          providers={["twitter"]}
           redirectTo={`${window.location.origin}/landing`}
         />
       </div>
