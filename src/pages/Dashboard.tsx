@@ -14,14 +14,13 @@ import { useToast } from "@/hooks/use-toast";
 import { Globe, Users } from "lucide-react";
 import { SearchAndFilters } from "@/components/dashboard/SearchAndFilters";
 import { useFilteredCults } from "@/hooks/useFilteredCults";
+import { useSession } from "@supabase/auth-helpers-react";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const { generateWithAI } = useAI();
   const { toast } = useToast();
-
-  // Get current user session
-  const { data: session } = await supabase.auth.getSession();
+  const session = useSession();
   const currentUserId = session?.user?.id;
 
   const { data: cults, isLoading, refetch } = useQuery({
@@ -139,7 +138,7 @@ const Dashboard = () => {
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
             cultType={cultType}
-            onTypeChange={setCultType}
+            onTypeChange={(value) => setCultType(value as 'all' | 'dev' | 'agent')}
           />
 
           {/* Main Content Tabs */}
