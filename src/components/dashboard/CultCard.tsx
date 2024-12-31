@@ -4,6 +4,9 @@ import { Users, Twitter } from "lucide-react";
 import { Cult } from "@/types/cult";
 import { useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useSession } from "@supabase/auth-helpers-react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 interface CultCardProps {
   cult: Cult;
@@ -12,6 +15,27 @@ interface CultCardProps {
 
 const CultCard: React.FC<CultCardProps> = ({ cult, onJoin }) => {
   const navigate = useNavigate();
+  const session = useSession();
+  const currentUserId = session?.user?.id;
+
+  // Check if user is a member of the cult
+  const { data: membership } = useQuery({
+    queryKey: ['cult-membership', cult.id, currentUserId],
+    queryFn: async () => {
+      if (!currentUserId) return null;
+      const { data } = await supabase
+        .from('cult_members')
+        .select('*')
+        .eq('cult_id', cult.id)
+        .eq('profile_id', currentUserId)
+        .single();
+      return data;
+    },
+    enabled: !!currentUserId,
+  });
+
+  const isFounder = cult.founder_id === currentUserId;
+  const isMember = !!membership;
 
   return (
     <Card 
@@ -58,23 +82,32 @@ const CultCard: React.FC<CultCardProps> = ({ cult, onJoin }) => {
           }`}>
             {cult.cult_type === 'dev' ? 'Developer' : 'AI Agent'}
           </span>
+          {(isFounder || isMember) && (
+            <span className="px-2 py-1 rounded text-sm bg-green-500/20 text-green-300">
+              {isFounder ? 'Founder' : 'Member'}
+            </span>
+          )}
         </div>
         <div className="flex gap-2">
-          <Button 
-            variant="outline" 
-            className="flex-1 border-cultGlow text-cultWhite hover:bg-cultPurple/50"
-            onClick={() => onJoin(cult.id)}
-          >
-            <Users className="mr-2 h-4 w-4" />
-            Join
-          </Button>
-          <Button 
-            variant="outline" 
-            className="flex-1 border-cultGlow text-cultWhite hover:bg-cultPurple/50"
-            onClick={() => navigate(`/cult/${cult.id}`)}
-          >
-            Manage
-          </Button>
+          {!isFounder && !isMember && (
+            <Button 
+              variant="outline" 
+              className="flex-1 border-cultGlow text-cultWhite hover:bg-cultPurple/50"
+              onClick={() => onJoin(cult.id)}
+            >
+              <Users className="mr-2 h-4 w-4" />
+              Join
+            </Button>
+          )}
+          {isFounder && (
+            <Button 
+              variant="outline" 
+              className="flex-1 border-cultGlow text-cultWhite hover:bg-cultPurple/50"
+              onClick={() => navigate(`/cult/${cult.id}`)}
+            >
+              Manage
+            </Button>
+          )}
         </div>
       </CardContent>
     </Card>
