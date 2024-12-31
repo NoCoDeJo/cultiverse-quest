@@ -3,6 +3,7 @@ import { FormFields } from "./cult-form/FormFields";
 import { useCreateCult } from "./cult-form/useCreateCult";
 import OverseerConversation from "./cult-form/OverseerConversation";
 import { useState } from "react";
+import { FormValues } from "./cult-form/FormFields";
 
 interface CreateCultFormProps {
   onSuccess: () => void;
@@ -12,9 +13,11 @@ const CreateCultForm = ({ onSuccess }: CreateCultFormProps) => {
   const { form, onSubmit } = useCreateCult(onSuccess);
   const [showForm, setShowForm] = useState(false);
 
-  const handleConversationComplete = (values: any) => {
-    Object.keys(values).forEach((key) => {
-      form.setValue(key, values[key]);
+  const handleConversationComplete = (values: Partial<FormValues>) => {
+    (Object.keys(values) as Array<keyof FormValues>).forEach((key) => {
+      if (values[key] !== undefined) {
+        form.setValue(key, values[key]!);
+      }
     });
     setShowForm(true);
   };
