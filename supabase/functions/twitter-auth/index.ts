@@ -28,12 +28,16 @@ function generateOAuthSignature(
 }
 
 function generateOAuthHeader(method: string, url: string): string {
+  if (!API_KEY || !API_SECRET || !ACCESS_TOKEN || !ACCESS_TOKEN_SECRET) {
+    throw new Error("Missing Twitter API credentials");
+  }
+
   const oauthParams = {
-    oauth_consumer_key: API_KEY!,
+    oauth_consumer_key: API_KEY,
     oauth_nonce: Math.random().toString(36).substring(2),
     oauth_signature_method: "HMAC-SHA1",
     oauth_timestamp: Math.floor(Date.now() / 1000).toString(),
-    oauth_token: ACCESS_TOKEN!,
+    oauth_token: ACCESS_TOKEN,
     oauth_version: "1.0",
   };
 
@@ -41,8 +45,8 @@ function generateOAuthHeader(method: string, url: string): string {
     method,
     url,
     oauthParams,
-    API_SECRET!,
-    ACCESS_TOKEN_SECRET!
+    API_SECRET,
+    ACCESS_TOKEN_SECRET
   );
 
   const signedOAuthParams = {
@@ -64,23 +68,45 @@ async function getTwitterUserInfo(username: string) {
   const method = "GET";
   const oauthHeader = generateOAuthHeader(method, url);
 
-  const response = await fetch(url, {
-    method: method,
-    headers: {
-      Authorization: oauthHeader,
-      "Content-Type": "application/json",
-    },
-  });
+  try {
+    const response = await fetch(url, {
+      method: method,
+      headers: {
+        Authorization: oauthHeader,
+        "Content-Type": "application/json",
+      },
+    });
 
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Twitter API Error:", errorText);
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching Twitter user info:", error);
+    throw error;
   }
-
-  return await response.json();
 }
 
 Deno.serve(async (req) => {
+  // Handle CORS preflight requests
+  if (req.method === "OPTIONS") {
+    return new Response(null, {
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      },
+    });
+  }
+
   try {
+    if (!API_KEY || !API_SECRET || !ACCESS_TOKEN || !ACCESS_TOKEN_SECRET) {
+      throw new Error("Missing Twitter API credentials");
+    }
+
     const { username } = await req.json();
     if (!username) {
       throw new Error("Username is required");
@@ -92,16 +118,23 @@ Deno.serve(async (req) => {
       success: true,
       data: userInfo
     }), {
-      headers: { "Content-Type": "application/json" },
+      headers: { 
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
     });
   } catch (error: any) {
+    console.error("Function error:", error);
     return new Response(
       JSON.stringify({
         success: false,
         error: error.message,
       }),
       {
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
         status: 400,
       }
     );
