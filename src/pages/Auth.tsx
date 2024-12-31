@@ -82,6 +82,7 @@ const AuthPage = () => {
           }}
           providers={["twitter"]}
           redirectTo={`${window.location.origin}/landing`}
+          onlyThirdPartyProviders={true}
         />
       </div>
     </div>
