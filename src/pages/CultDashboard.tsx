@@ -6,13 +6,14 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { Cult } from "@/types/cult";
-import { ArrowLeft, Twitter, Settings } from "lucide-react";
+import { ArrowLeft, Twitter, Settings, ImagePlus, Pencil } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { QuickActions } from "@/components/dashboard/sections/QuickActions";
 import { ActivityFeed } from "@/components/dashboard/sections/ActivityFeed";
 import { CultStats } from "@/components/dashboard/sections/CultStats";
 import { RitualSection } from "@/components/dashboard/sections/RitualSection";
 import { LinksSection } from "@/components/dashboard/sections/LinksSection";
+import { ImageManagement } from "@/components/dashboard/sections/ImageManagement";
 
 const CultDashboard = () => {
   const { cultId } = useParams();
@@ -71,40 +72,67 @@ const CultDashboard = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-cultDark to-cultPurple p-4">
       <div className="max-w-7xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="flex justify-between items-center p-4 bg-cultDark/50 rounded-lg">
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              onClick={() => navigate('/dashboard')}
-              className="text-cultWhite hover:bg-cultPurple/20"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            <h1 className="text-3xl font-cinzel text-cultWhite">
-              {cult.name}
-            </h1>
-          </div>
-          <div className="flex items-center gap-2">
-            {cult.twitter_handle && (
-              <a
-                href={`https://twitter.com/${cult.twitter_handle}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-cultWhite/60 hover:text-cultWhite transition-colors"
+        {/* Header with Banner */}
+        <div className="relative rounded-lg overflow-hidden">
+          {cult.banner_url ? (
+            <img 
+              src={cult.banner_url} 
+              alt={`${cult.name} banner`}
+              className="w-full h-[200px] object-cover"
+            />
+          ) : (
+            <div className="w-full h-[200px] bg-cultDark/50" />
+          )}
+          
+          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-cultDark/90 to-transparent p-4">
+            <div className="flex items-center gap-4">
+              <Button
+                variant="ghost"
+                onClick={() => navigate('/dashboard')}
+                className="text-cultWhite hover:bg-cultPurple/20"
               >
-                <Twitter className="h-5 w-5" />
-              </a>
-            )}
-            <Button variant="outline" className="border-cultGlow text-cultWhite">
-              <Settings className="h-5 w-5" />
-            </Button>
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+              <div className="flex-1">
+                <h1 className="text-3xl font-cinzel text-cultWhite">
+                  {cult.name}
+                </h1>
+              </div>
+              <div className="flex items-center gap-2">
+                {cult.twitter_handle && (
+                  <a
+                    href={`https://twitter.com/${cult.twitter_handle}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-cultWhite/60 hover:text-cultWhite transition-colors"
+                  >
+                    <Twitter className="h-5 w-5" />
+                  </a>
+                )}
+                <Button variant="outline" className="border-cultGlow text-cultWhite">
+                  <Settings className="h-5 w-5" />
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Management Section */}
           <div className="lg:col-span-2 space-y-6">
+            {/* Image Management */}
+            <Card className="bg-cultDark/50 border-cultGlow">
+              <CardHeader>
+                <CardTitle className="text-cultWhite">Cult Images</CardTitle>
+                <CardDescription className="text-cultWhite/60">
+                  Manage your cult's profile and banner images
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ImageManagement cult={cult} />
+              </CardContent>
+            </Card>
+
             {/* Quick Actions */}
             <Card className="bg-cultDark/50 border-cultGlow">
               <CardHeader>
