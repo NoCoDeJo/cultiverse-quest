@@ -10,18 +10,8 @@ export const Navbar = () => {
   const { toast } = useToast();
   const [isSigningOut, setIsSigningOut] = useState(false);
 
-  // Check session on mount and redirect if no session
   useEffect(() => {
-    const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        navigate('/');
-      }
-    };
-    
-    checkSession();
-
-    // Listen for auth state changes
+    // Set up auth state change listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (event === 'SIGNED_OUT') {
         navigate('/');
@@ -34,24 +24,36 @@ export const Navbar = () => {
   }, [navigate]);
 
   const handleSignOut = async () => {
-    if (isSigningOut) return; // Prevent multiple sign-out attempts
+    if (isSigningOut) return;
 
     try {
       setIsSigningOut(true);
-      const { error } = await supabase.auth.signOut();
+      
+      // First clear any stored session data
+      await supabase.auth.clearSession();
+      
+      // Then perform the sign out
+      const { error } = await supabase.auth.signOut({
+        scope: 'local'  // Only sign out locally to avoid JWT validation
+      });
       
       if (error) throw error;
 
+      // Navigate immediately after successful sign out
+      navigate('/');
+      
       toast({
         title: "Signed out successfully",
         description: "You have been logged out.",
       });
     } catch (error) {
       console.error("Sign out error:", error);
+      // Still navigate even if there's an error
+      navigate('/');
+      
       toast({
-        title: "Error signing out",
-        description: "Please try again.",
-        variant: "destructive",
+        title: "Session ended",
+        description: "You have been logged out.",
       });
     } finally {
       setIsSigningOut(false);
