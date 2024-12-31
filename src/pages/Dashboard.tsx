@@ -8,7 +8,7 @@ import { Profile } from "@/types/profile";
 import { Cult } from "@/types/cult";
 import ProfileCard from "@/components/dashboard/ProfileCard";
 import CultCard from "@/components/dashboard/CultCard";
-import CreateCultButton from "@/components/dashboard/CreateCultButton";
+import CreateCultDialog from "@/components/dashboard/CreateCultDialog";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -17,6 +17,27 @@ const Dashboard = () => {
   const [cults, setCults] = useState<Cult[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const fetchCults = async () => {
+    try {
+      const { data: cultsData, error: cultsError } = await supabase
+        .from('cults')
+        .select('*')
+        .eq('visibility', 'public');
+
+      if (cultsError) {
+        toast({
+          title: "Error",
+          description: "Failed to load cults",
+          variant: "destructive",
+        });
+      } else {
+        setCults(cultsData || []);
+      }
+    } catch (err) {
+      console.error("Error fetching cults:", err);
+    }
+  };
 
   useEffect(() => {
     const checkUser = async () => {
@@ -46,21 +67,7 @@ const Dashboard = () => {
         }
 
         setProfile(profileData);
-
-        const { data: cultsData, error: cultsError } = await supabase
-          .from('cults')
-          .select('*')
-          .eq('visibility', 'public');
-
-        if (cultsError) {
-          toast({
-            title: "Error",
-            description: "Failed to load cults",
-            variant: "destructive",
-          });
-        } else {
-          setCults(cultsData || []);
-        }
+        await fetchCults();
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : "An unexpected error occurred";
         console.error("Dashboard error:", err);
@@ -88,14 +95,6 @@ const Dashboard = () => {
     toast({
       title: "Coming Soon",
       description: "Cult joining functionality will be available soon!",
-    });
-  };
-
-  const handleCreateCult = () => {
-    // TODO: Implement cult creation functionality
-    toast({
-      title: "Coming Soon",
-      description: "Cult creation functionality will be available soon!",
     });
   };
 
@@ -154,7 +153,7 @@ const Dashboard = () => {
             <h2 className="text-2xl font-cinzel text-cultWhite">
               Available Cults
             </h2>
-            <CreateCultButton onClick={handleCreateCult} />
+            <CreateCultDialog onCultCreated={fetchCults} />
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
