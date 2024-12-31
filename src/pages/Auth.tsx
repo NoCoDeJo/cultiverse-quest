@@ -48,6 +48,11 @@ const AuthPage = () => {
     return () => subscription.unsubscribe();
   }, [navigate, toast]);
 
+  // Get the preview URL from the window location
+  const previewUrl = window.location.origin.includes('lovable.dev') 
+    ? window.location.origin 
+    : 'https://cultiverse-quest-preview.lovable.dev';
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 to-black p-4">
       <div className="w-full max-w-md bg-black/30 p-8 rounded-lg backdrop-blur-sm border border-purple-500/20">
@@ -101,7 +106,7 @@ const AuthPage = () => {
             },
           }}
           providers={["twitter"]}
-          redirectTo={window.location.origin}
+          redirectTo={previewUrl}
           view="sign_in"
         />
       </div>
