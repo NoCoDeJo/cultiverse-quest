@@ -9,18 +9,19 @@ import { Cult } from "@/types/cult";
 import ProfileCard from "@/components/dashboard/ProfileCard";
 import CultCard from "@/components/dashboard/CultCard";
 import CreateCultDialog from "@/components/dashboard/CreateCultDialog";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [cults, setCults] = useState<Cult[]>([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
-  const fetchCults = async () => {
-    try {
-      const { data: cultsData, error: cultsError } = await supabase
+  const { data: cults = [], isLoading } = useQuery({
+    queryKey: ['cults'],
+    queryFn: async () => {
+      const { data, error: cultsError } = await supabase
         .from('cults')
         .select('*')
         .eq('visibility', 'public');
@@ -31,13 +32,12 @@ const Dashboard = () => {
           description: "Failed to load cults",
           variant: "destructive",
         });
-      } else {
-        setCults(cultsData || []);
+        throw cultsError;
       }
-    } catch (err) {
-      console.error("Error fetching cults:", err);
+
+      return (data || []) as Cult[];
     }
-  };
+  });
 
   useEffect(() => {
     const checkUser = async () => {
@@ -67,7 +67,6 @@ const Dashboard = () => {
         }
 
         setProfile(profileData);
-        await fetchCults();
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : "An unexpected error occurred";
         console.error("Dashboard error:", err);
@@ -77,8 +76,6 @@ const Dashboard = () => {
           description: errorMessage,
           variant: "destructive",
         });
-      } finally {
-        setLoading(false);
       }
     };
     
@@ -98,7 +95,7 @@ const Dashboard = () => {
     });
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-cultDark flex items-center justify-center">
         <div className="text-cultWhite text-xl animate-pulse">
@@ -153,7 +150,7 @@ const Dashboard = () => {
             <h2 className="text-2xl font-cinzel text-cultWhite">
               Available Cults
             </h2>
-            <CreateCultDialog onCultCreated={fetchCults} />
+            <CreateCultDialog onCultCreated={() => queryClient.invalidateQueries({ queryKey: ['cults'] })} />
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
