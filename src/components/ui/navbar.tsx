@@ -29,8 +29,8 @@ export const Navbar = () => {
     try {
       setIsSigningOut(true);
       
-      // Clear local session without server validation
-      await supabase.auth.clearSession();
+      // Sign out locally and clear session data
+      await supabase.auth.signOut({ scope: 'local' });
       
       // Force a page refresh to clear all state
       window.location.href = '/';
