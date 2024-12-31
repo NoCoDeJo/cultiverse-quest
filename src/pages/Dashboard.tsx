@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, Users } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface Cult {
   id: string;
@@ -39,12 +40,18 @@ const Dashboard = () => {
         .from('profiles')
         .select('sacred_name, worthiness_score')
         .eq('id', session.user.id)
-        .single();
+        .maybeSingle();
 
       if (profileError) {
         toast({
           title: "Error",
           description: "Failed to load profile",
+          variant: "destructive",
+        });
+      } else if (!profileData) {
+        toast({
+          title: "Profile Not Found",
+          description: "Your profile could not be found. Please try signing out and in again.",
           variant: "destructive",
         });
       } else {
@@ -104,7 +111,13 @@ const Dashboard = () => {
         </div>
 
         {/* Profile Section */}
-        {profile && (
+        {!profile ? (
+          <Alert variant="destructive">
+            <AlertDescription>
+              Your profile could not be found. Please try signing out and in again.
+            </AlertDescription>
+          </Alert>
+        ) : (
           <Card className="bg-cultDark/80 border-cultGlow glow-border">
             <CardHeader>
               <CardTitle className="text-cultWhite">Sacred Identity</CardTitle>
