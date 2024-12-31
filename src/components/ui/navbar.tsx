@@ -29,10 +29,7 @@ export const Navbar = () => {
     try {
       setIsSigningOut(true);
       
-      // First clear any stored session data
-      await supabase.auth.clearSession();
-      
-      // Then perform the sign out
+      // Sign out using the correct method
       const { error } = await supabase.auth.signOut({
         scope: 'local'  // Only sign out locally to avoid JWT validation
       });
