@@ -6,7 +6,6 @@ import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { AuthError, AuthResponse } from "@supabase/supabase-js";
 
 const AuthPage = () => {
   const navigate = useNavigate();
@@ -29,15 +28,15 @@ const AuthPage = () => {
       }
     };
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (session) {
         toast({
           title: "Welcome!",
           description: "You have successfully signed in.",
         });
         navigate("/dashboard");
-      } else {
-        // Handle sign out or session expiration
+      } else if (event === 'SIGNED_OUT') {
+        // Only show sign out message when explicitly signed out
         toast({
           title: "Signed out",
           description: "You have been signed out.",
