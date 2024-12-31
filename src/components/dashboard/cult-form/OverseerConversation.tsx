@@ -5,7 +5,7 @@ import { useAIAssistant } from "@/hooks/useAIAssistant";
 import { FormValues } from "./FormFields";
 
 interface OverseerConversationProps {
-  onComplete: (values: FormValues) => void;
+  onComplete: (values: Partial<FormValues>) => void;
 }
 
 const OverseerConversation = ({ onComplete }: OverseerConversationProps) => {
@@ -16,6 +16,7 @@ const OverseerConversation = ({ onComplete }: OverseerConversationProps) => {
   const [showInput, setShowInput] = useState(false);
   const [useAI, setUseAI] = useState<boolean | null>(null);
   const { generateCultInfo } = useAIAssistant();
+  const [userResponse, setUserResponse] = useState("");
 
   const conversations = [
     "Welcome, seeker of truth. I am the Overseer, guardian of all cults.",
@@ -48,16 +49,17 @@ const OverseerConversation = ({ onComplete }: OverseerConversationProps) => {
 
   const handleNameSubmit = () => {
     if (cultName.trim()) {
+      setUserResponse(cultName);
       setStep(2);
     }
   };
 
   const handleAIChoice = async (choice: boolean) => {
     setUseAI(choice);
+    setUserResponse(choice ? "Yes, consult the AI" : "No, I shall decide");
     setStep(3);
 
     if (choice) {
-      // Generate cult info using AI
       const cultInfo = await generateCultInfo();
       if (cultInfo) {
         onComplete({
@@ -70,7 +72,6 @@ const OverseerConversation = ({ onComplete }: OverseerConversationProps) => {
         });
       }
     } else {
-      // Continue with manual input (you can expand this part)
       onComplete({
         name: cultName,
         description: "A mysterious new cult emerges from the shadows...",
@@ -90,6 +91,14 @@ const OverseerConversation = ({ onComplete }: OverseerConversationProps) => {
           {isTyping && <span className="animate-pulse">▊</span>}
         </p>
       </div>
+
+      {userResponse && (
+        <div className="min-h-[60px] bg-cultPurple/20 p-4 rounded-lg border border-cultGlow">
+          <p className="font-mono text-right">
+            {userResponse}
+          </p>
+        </div>
+      )}
 
       {showInput && step === 1 && (
         <div className="space-y-2 animate-fade-in">

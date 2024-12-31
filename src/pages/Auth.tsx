@@ -36,7 +36,6 @@ const AuthPage = () => {
         });
         navigate("/dashboard");
       } else if (event === 'SIGNED_OUT') {
-        // Only show sign out message when explicitly signed out
         toast({
           title: "Signed out",
           description: "You have been signed out.",
@@ -103,7 +102,6 @@ const AuthPage = () => {
           }}
           providers={["twitter"]}
           redirectTo={`${window.location.origin}/landing`}
-          onlyThirdPartyProviders={true}
         />
       </div>
     </div>
