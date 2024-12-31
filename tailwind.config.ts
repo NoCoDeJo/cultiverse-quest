@@ -62,10 +62,24 @@ export default {
           "0%, 100%": { transform: "translateY(0)" },
           "50%": { transform: "translateY(-10px)" },
         },
+        "fade-in": {
+          "0%": { opacity: "0", transform: "translateY(10px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" }
+        },
+        "background-shine": {
+          "0%": {
+            backgroundPosition: "200% 0"
+          },
+          "100%": {
+            backgroundPosition: "-200% 0"
+          }
+        }
       },
       animation: {
         "glow-pulse": "glow-pulse 2s ease-in-out infinite",
         "float": "float 6s ease-in-out infinite",
+        "fade-in": "fade-in 0.5s ease-out forwards",
+        "background-shine": "background-shine 8s linear infinite"
       },
       fontFamily: {
         cinzel: ["Cinzel", "serif"],
