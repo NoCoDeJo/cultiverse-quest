@@ -271,6 +271,7 @@ export type Database = {
         Row: {
           banner_image_url: string | null
           created_at: string
+          description: string | null
           id: string
           profile_image_url: string | null
           sacred_name: string
@@ -280,6 +281,7 @@ export type Database = {
         Insert: {
           banner_image_url?: string | null
           created_at?: string
+          description?: string | null
           id: string
           profile_image_url?: string | null
           sacred_name: string
@@ -289,6 +291,7 @@ export type Database = {
         Update: {
           banner_image_url?: string | null
           created_at?: string
+          description?: string | null
           id?: string
           profile_image_url?: string | null
           sacred_name?: string

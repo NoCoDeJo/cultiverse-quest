@@ -5,7 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import GenerateWithAIButton from "../../GenerateWithAIButton";
+import GenerateWithAIButton from "../../cult-form/GenerateWithAIButton";
 import { useAIAssistant } from "@/hooks/useAIAssistant";
 
 interface AboutMeEditorProps {
