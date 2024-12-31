@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
+import { Json } from "@/integrations/supabase/types";
 
 interface JoinApplicationFormProps {
   cultId: string;
@@ -35,7 +36,7 @@ export const JoinApplicationForm = ({ cultId }: JoinApplicationFormProps) => {
         .from('cult_join_applications')
         .insert({
           cult_id: cultId,
-          application_data: data,
+          application_data: data as Json,
         });
 
       if (error) throw error;
