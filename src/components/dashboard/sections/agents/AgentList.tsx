@@ -1,9 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
-import { Brain, Trash2 } from "lucide-react";
+import { Brain, Trash2, Bot } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { Badge } from "@/components/ui/badge";
 
 interface AgentListProps {
   cultId: string;
@@ -66,11 +67,21 @@ export const AgentList = ({ cultId }: AgentListProps) => {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <Brain className="h-5 w-5 text-cultWhite/60" />
-                <div>
-                  <h3 className="text-cultWhite font-medium">{agent.name}</h3>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-cultWhite font-medium">{agent.name}</h3>
+                    <Badge variant="secondary" className="text-xs">
+                      {agent.capabilities?.modelProvider || 'AI Agent'}
+                    </Badge>
+                  </div>
                   {agent.description && (
                     <p className="text-sm text-cultWhite/60">
                       {agent.description}
+                    </p>
+                  )}
+                  {agent.personality && (
+                    <p className="text-xs text-cultWhite/40">
+                      Personality: {agent.personality}
                     </p>
                   )}
                 </div>

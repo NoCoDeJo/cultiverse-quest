@@ -11,6 +11,36 @@ interface AgentUploaderProps {
   onSuccess?: () => void;
 }
 
+interface AgentConfig {
+  name: string;
+  username?: string;
+  modelProvider: string;
+  imageModelProvider?: string;
+  bio: string[];
+  lore: string[];
+  knowledge: string[];
+  messageExamples: Array<Array<{
+    user: string;
+    content: {
+      text: string;
+    };
+  }>>;
+  postExamples: string[];
+  topics: string[];
+  style: {
+    all: string[];
+    chat: string[];
+    post: string[];
+  };
+  adjectives: string[];
+  settings?: {
+    voice?: {
+      model?: string;
+    };
+    secrets?: Record<string, unknown>;
+  };
+}
+
 export const AgentUploader = ({ cultId, onSuccess }: AgentUploaderProps) => {
   const [isUploading, setIsUploading] = useState(false);
   const { toast } = useToast();
@@ -22,20 +52,37 @@ export const AgentUploader = ({ cultId, onSuccess }: AgentUploaderProps) => {
     setIsUploading(true);
     try {
       const fileContent = await file.text();
-      const agentConfig = JSON.parse(fileContent);
+      const agentConfig: AgentConfig = JSON.parse(fileContent);
 
       // Validate required fields
-      if (!agentConfig.name) {
-        throw new Error("Agent configuration must include a name");
+      if (!agentConfig.name || !agentConfig.modelProvider || !agentConfig.bio) {
+        throw new Error("Agent configuration must include name, modelProvider, and bio");
       }
+
+      // Create a description from the bio
+      const description = agentConfig.bio.join(' ');
+
+      // Create a personality from adjectives and style
+      const personality = [
+        ...agentConfig.adjectives,
+        ...(agentConfig.style.all || [])
+      ].join(', ');
 
       const { error } = await supabase.from("cult_agents").insert({
         cult_id: cultId,
         name: agentConfig.name,
-        description: agentConfig.description,
-        personality: agentConfig.personality,
-        knowledge: agentConfig.knowledge || [],
-        capabilities: agentConfig.capabilities || [],
+        description: description,
+        personality: personality,
+        knowledge: agentConfig.knowledge,
+        capabilities: {
+          topics: agentConfig.topics,
+          modelProvider: agentConfig.modelProvider,
+          imageModelProvider: agentConfig.imageModelProvider,
+          messageExamples: agentConfig.messageExamples,
+          postExamples: agentConfig.postExamples,
+          style: agentConfig.style,
+          settings: agentConfig.settings
+        },
       });
 
       if (error) throw error;
@@ -71,7 +118,8 @@ export const AgentUploader = ({ cultId, onSuccess }: AgentUploaderProps) => {
         className="text-cultWhite"
       />
       <p className="text-sm text-cultWhite/60">
-        Upload a JSON file containing your agent's configuration
+        Upload a JSON file containing your agent's configuration. The file should include the agent's name, 
+        personality traits, knowledge base, and interaction examples.
       </p>
     </div>
   );
