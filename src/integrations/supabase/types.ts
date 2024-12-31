@@ -150,6 +150,7 @@ export type Database = {
       }
       cults: {
         Row: {
+          banner_url: string | null
           created_at: string
           cult_type: string
           description: string | null
@@ -165,6 +166,7 @@ export type Database = {
           visibility: string | null
         }
         Insert: {
+          banner_url?: string | null
           created_at?: string
           cult_type?: string
           description?: string | null
@@ -180,6 +182,7 @@ export type Database = {
           visibility?: string | null
         }
         Update: {
+          banner_url?: string | null
           created_at?: string
           cult_type?: string
           description?: string | null
@@ -213,22 +216,28 @@ export type Database = {
       }
       profiles: {
         Row: {
+          banner_image_url: string | null
           created_at: string
           id: string
+          profile_image_url: string | null
           sacred_name: string
           updated_at: string
           worthiness_score: number | null
         }
         Insert: {
+          banner_image_url?: string | null
           created_at?: string
           id: string
+          profile_image_url?: string | null
           sacred_name: string
           updated_at?: string
           worthiness_score?: number | null
         }
         Update: {
+          banner_image_url?: string | null
           created_at?: string
           id?: string
+          profile_image_url?: string | null
           sacred_name?: string
           updated_at?: string
           worthiness_score?: number | null

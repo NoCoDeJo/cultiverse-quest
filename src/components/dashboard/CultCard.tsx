@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Users, Twitter } from "lucide-react";
 import { Cult } from "@/types/cult";
 import { useNavigate } from "react-router-dom";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface CultCardProps {
   cult: Cult;
@@ -14,23 +15,40 @@ const CultCard = ({ cult, onJoin }: CultCardProps) => {
 
   return (
     <Card 
-      className="bg-cultDark/80 border-cultGlow hover:glow-border transition-all duration-300"
+      className="bg-cultDark/80 border-cultGlow hover:glow-border transition-all duration-300 overflow-hidden"
       style={{ borderColor: cult.theme_color }}
     >
-      <CardHeader>
-        <CardTitle className="text-cultWhite flex items-center justify-between">
-          <span>{cult.name}</span>
-          {cult.twitter_handle && (
-            <a 
-              href={`https://twitter.com/${cult.twitter_handle}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-cultWhite/60 hover:text-cultWhite transition-colors"
-            >
-              <Twitter className="h-5 w-5" />
-            </a>
-          )}
-        </CardTitle>
+      {cult.banner_url && (
+        <div className="h-32 w-full overflow-hidden">
+          <img 
+            src={cult.banner_url} 
+            alt={`${cult.name} banner`}
+            className="w-full h-full object-cover"
+          />
+        </div>
+      )}
+      <CardHeader className="relative">
+        <div className="flex items-center gap-4">
+          <Avatar className="h-12 w-12 border-2 border-cultGlow">
+            <AvatarImage src={cult.logo_url} />
+            <AvatarFallback className="bg-cultPurple text-cultWhite">
+              {cult.name.charAt(0).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+          <CardTitle className="text-cultWhite flex items-center justify-between flex-1">
+            <span>{cult.name}</span>
+            {cult.twitter_handle && (
+              <a 
+                href={`https://twitter.com/${cult.twitter_handle}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-cultWhite/60 hover:text-cultWhite transition-colors"
+              >
+                <Twitter className="h-5 w-5" />
+              </a>
+            )}
+          </CardTitle>
+        </div>
       </CardHeader>
       <CardContent>
         <p className="text-cultWhite/80 mb-2">{cult.description}</p>

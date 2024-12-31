@@ -4,6 +4,7 @@ export interface Cult {
   description: string | null;
   theme_color: string | null;
   logo_url: string | null;
+  banner_url: string | null;
   founder_id: string | null;
   visibility: string | null;
   twitter_handle: string | null;
