@@ -28,6 +28,9 @@ const AuthPage = () => {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
+  const siteUrl = window.location.origin;
+  const redirectUrl = `${siteUrl}/landing`;
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 to-black p-4">
       <div className="w-full max-w-md bg-black/30 p-8 rounded-lg backdrop-blur-sm border border-purple-500/20">
@@ -81,7 +84,7 @@ const AuthPage = () => {
             },
           }}
           providers={["twitter"]}
-          redirectTo="https://lovable.dev/projects/eed48baa-2ca9-4753-83da-8ca8d5f7b87f/landing"
+          redirectTo={redirectUrl}
           onlyThirdPartyProviders={true}
         />
       </div>
