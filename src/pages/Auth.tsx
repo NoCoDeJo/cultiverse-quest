@@ -17,8 +17,6 @@ const AuthPage = () => {
       }
     };
 
-    checkUser();
-
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session) {
         navigate("/dashboard");
@@ -28,8 +26,7 @@ const AuthPage = () => {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
-  const siteUrl = window.location.origin;
-  const redirectUrl = `${siteUrl}/landing`;
+  const redirectUrl = "https://cultiverse-quest.vercel.app/landing";
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 to-black p-4">
