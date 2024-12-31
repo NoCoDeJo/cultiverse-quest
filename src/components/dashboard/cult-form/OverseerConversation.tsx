@@ -17,12 +17,21 @@ const OverseerConversation = ({ onComplete }: OverseerConversationProps) => {
   const [useAI, setUseAI] = useState<boolean | null>(null);
   const { generateCultInfo } = useAIAssistant();
   const [userResponse, setUserResponse] = useState("");
+  const [inputMode, setInputMode] = useState<"type" | "select">("select");
 
   const conversations = [
     "Welcome, seeker of truth. I am the Overseer, guardian of all cults.",
     "Tell me, what name shall your cult bear?",
     "Ah, {cultName}... an intriguing choice. Shall we consult the ancient AI to forge your cult's destiny?",
     "Very well. Let us proceed with the ancient rites of creation...",
+  ];
+
+  const predefinedNames = [
+    "The Digital Enlightened",
+    "Cyber Mystics",
+    "Code Disciples",
+    "Binary Prophets",
+    "Silicon Sages"
   ];
 
   const typeText = async (text: string) => {
@@ -83,6 +92,12 @@ const OverseerConversation = ({ onComplete }: OverseerConversationProps) => {
     }
   };
 
+  const handlePredefinedNameSelect = (name: string) => {
+    setCultName(name);
+    setUserResponse(name);
+    setStep(2);
+  };
+
   return (
     <div className="space-y-4 text-cultWhite">
       <div className="min-h-[100px] bg-cultDark/50 p-4 rounded-lg border border-cultGlow">
@@ -101,19 +116,53 @@ const OverseerConversation = ({ onComplete }: OverseerConversationProps) => {
       )}
 
       {showInput && step === 1 && (
-        <div className="space-y-2 animate-fade-in">
-          <Input
-            value={cultName}
-            onChange={(e) => setCultName(e.target.value)}
-            className="bg-cultDark/30 border-cultGlow text-cultWhite"
-            placeholder="Enter the name of your cult..."
-          />
-          <Button 
-            onClick={handleNameSubmit}
-            className="w-full bg-cultGlow hover:bg-cultGlow/80"
-          >
-            Submit Name
-          </Button>
+        <div className="space-y-4 animate-fade-in">
+          <div className="flex gap-2">
+            <Button
+              onClick={() => setInputMode("type")}
+              className={`flex-1 ${inputMode === "type" ? "bg-cultGlow" : "bg-cultDark border-cultGlow"}`}
+              variant={inputMode === "type" ? "default" : "outline"}
+            >
+              Type Name
+            </Button>
+            <Button
+              onClick={() => setInputMode("select")}
+              className={`flex-1 ${inputMode === "select" ? "bg-cultGlow" : "bg-cultDark border-cultGlow"}`}
+              variant={inputMode === "select" ? "default" : "outline"}
+            >
+              Choose Name
+            </Button>
+          </div>
+
+          {inputMode === "type" ? (
+            <div className="space-y-2">
+              <Input
+                value={cultName}
+                onChange={(e) => setCultName(e.target.value)}
+                className="bg-cultDark/30 border-cultGlow text-cultWhite"
+                placeholder="Enter the name of your cult..."
+              />
+              <Button 
+                onClick={handleNameSubmit}
+                className="w-full bg-cultGlow hover:bg-cultGlow/80"
+              >
+                Submit Name
+              </Button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-2">
+              {predefinedNames.map((name) => (
+                <Button
+                  key={name}
+                  onClick={() => handlePredefinedNameSelect(name)}
+                  className="w-full bg-cultDark border-cultGlow hover:bg-cultPurple/20"
+                  variant="outline"
+                >
+                  {name}
+                </Button>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
