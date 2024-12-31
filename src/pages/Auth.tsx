@@ -48,10 +48,6 @@ const AuthPage = () => {
     return () => subscription.unsubscribe();
   }, [navigate, toast]);
 
-  // Get the current URL for redirect
-  const currentUrl = window.location.origin;
-  const redirectTo = `${currentUrl}/auth/callback`;
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 to-black p-4">
       <div className="w-full max-w-md bg-black/30 p-8 rounded-lg backdrop-blur-sm border border-purple-500/20">
@@ -105,8 +101,6 @@ const AuthPage = () => {
             },
           }}
           providers={[]}
-          redirectTo={redirectTo}
-          magicLink={false}
         />
       </div>
     </div>
