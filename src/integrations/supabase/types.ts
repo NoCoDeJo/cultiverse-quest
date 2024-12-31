@@ -9,7 +9,74 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      cults: {
+        Row: {
+          created_at: string
+          description: string | null
+          founder_id: string | null
+          id: string
+          logo_url: string | null
+          name: string
+          theme_color: string | null
+          updated_at: string
+          visibility: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          founder_id?: string | null
+          id?: string
+          logo_url?: string | null
+          name: string
+          theme_color?: string | null
+          updated_at?: string
+          visibility?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          founder_id?: string | null
+          id?: string
+          logo_url?: string | null
+          name?: string
+          theme_color?: string | null
+          updated_at?: string
+          visibility?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cults_founder_id_fkey"
+            columns: ["founder_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          id: string
+          sacred_name: string
+          updated_at: string
+          worthiness_score: number | null
+        }
+        Insert: {
+          created_at?: string
+          id: string
+          sacred_name: string
+          updated_at?: string
+          worthiness_score?: number | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          sacred_name?: string
+          updated_at?: string
+          worthiness_score?: number | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
