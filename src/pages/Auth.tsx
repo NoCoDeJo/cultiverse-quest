@@ -106,14 +106,6 @@ const AuthPage = () => {
           }}
           providers={[]}
           redirectTo={redirectTo}
-          onError={(error) => {
-            console.error("Auth error:", error);
-            toast({
-              variant: "destructive",
-              title: "Authentication Error",
-              description: error.message,
-            });
-          }}
           magicLink={false}
         />
       </div>
