@@ -54,6 +54,53 @@ export type Database = {
           },
         ]
       }
+      cult_agents: {
+        Row: {
+          capabilities: Json | null
+          created_at: string
+          cult_id: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          knowledge: Json | null
+          name: string
+          personality: string | null
+          updated_at: string
+        }
+        Insert: {
+          capabilities?: Json | null
+          created_at?: string
+          cult_id?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          knowledge?: Json | null
+          name: string
+          personality?: string | null
+          updated_at?: string
+        }
+        Update: {
+          capabilities?: Json | null
+          created_at?: string
+          cult_id?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          knowledge?: Json | null
+          name?: string
+          personality?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cult_agents_cult_id_fkey"
+            columns: ["cult_id"]
+            isOneToOne: false
+            referencedRelation: "cults"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cult_invites: {
         Row: {
           code: string

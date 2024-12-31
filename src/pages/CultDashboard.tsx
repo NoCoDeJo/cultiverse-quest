@@ -15,6 +15,7 @@ import { RitualSection } from "@/components/dashboard/sections/RitualSection";
 import { LinksSection } from "@/components/dashboard/sections/LinksSection";
 import { ImageManagement } from "@/components/dashboard/sections/ImageManagement";
 import { CommunityManagement } from "@/components/dashboard/sections/CommunityManagement";
+import { AgentSection } from "@/components/dashboard/sections/agents/AgentSection";
 
 const CultDashboard = () => {
   const { cultId } = useParams();
@@ -136,6 +137,9 @@ const CultDashboard = () => {
 
             {/* Community Management */}
             <CommunityManagement cultId={cult.id} />
+
+            {/* AI Agents Section */}
+            <AgentSection cultId={cult.id} />
 
             {/* Quick Actions */}
             <Card className="bg-cultDark/50 border-cultGlow">
