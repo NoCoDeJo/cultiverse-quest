@@ -1,37 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent } from "@/components/ui/card";
-import { Brain, Trash2, Bot } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Badge } from "@/components/ui/badge";
+import { Agent } from "@/types/agent";
+import { AgentCard } from "./AgentCard";
 
 interface AgentListProps {
   cultId: string;
-}
-
-interface AgentCapabilities {
-  modelProvider?: string;
-  imageModelProvider?: string;
-  topics?: string[];
-  messageExamples?: Array<Array<{
-    user: string;
-    content: {
-      text: string;
-    };
-  }>>;
-  postExamples?: string[];
-  style?: {
-    all: string[];
-    chat: string[];
-    post: string[];
-  };
-  settings?: {
-    voice?: {
-      model?: string;
-    };
-    secrets?: Record<string, string>;
-  };
 }
 
 export const AgentList = ({ cultId }: AgentListProps) => {
@@ -47,7 +21,7 @@ export const AgentList = ({ cultId }: AgentListProps) => {
         .eq("is_active", true);
 
       if (error) throw error;
-      return data;
+      return data as Agent[];
     },
   });
 
@@ -86,41 +60,11 @@ export const AgentList = ({ cultId }: AgentListProps) => {
   return (
     <div className="space-y-4">
       {agents.map((agent) => (
-        <Card key={agent.id} className="bg-cultDark/50 border-cultGlow">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Brain className="h-5 w-5 text-cultWhite/60" />
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-cultWhite font-medium">{agent.name}</h3>
-                    <Badge variant="secondary" className="text-xs">
-                      {(agent.capabilities as AgentCapabilities)?.modelProvider || 'AI Agent'}
-                    </Badge>
-                  </div>
-                  {agent.description && (
-                    <p className="text-sm text-cultWhite/60">
-                      {agent.description}
-                    </p>
-                  )}
-                  {agent.personality && (
-                    <p className="text-xs text-cultWhite/40">
-                      Personality: {agent.personality}
-                    </p>
-                  )}
-                </div>
-              </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => handleDelete(agent.id)}
-                className="text-cultWhite/60 hover:text-red-400"
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+        <AgentCard 
+          key={agent.id} 
+          agent={agent} 
+          onDelete={handleDelete}
+        />
       ))}
     </div>
   );

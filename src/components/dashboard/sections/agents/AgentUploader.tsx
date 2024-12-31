@@ -4,41 +4,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Upload } from "lucide-react";
+import { AgentConfig, AgentCapabilities } from "@/types/agent";
 
 interface AgentUploaderProps {
   cultId: string;
   onSuccess?: () => void;
-}
-
-interface AgentConfig {
-  name: string;
-  username?: string;
-  modelProvider: string;
-  imageModelProvider?: string;
-  bio: string[];
-  lore: string[];
-  knowledge: string[];
-  messageExamples: Array<Array<{
-    user: string;
-    content: {
-      text: string;
-    };
-  }>>;
-  postExamples: string[];
-  topics: string[];
-  style: {
-    all: string[];
-    chat: string[];
-    post: string[];
-  };
-  adjectives: string[];
-  settings?: {
-    voice?: {
-      model?: string;
-    };
-    secrets?: Record<string, unknown>;
-  };
 }
 
 export const AgentUploader = ({ cultId, onSuccess }: AgentUploaderProps) => {
@@ -69,7 +39,7 @@ export const AgentUploader = ({ cultId, onSuccess }: AgentUploaderProps) => {
       ].join(', ');
 
       // Convert the capabilities object to a JSON-compatible format
-      const capabilities = {
+      const capabilities: AgentCapabilities = {
         topics: agentConfig.topics,
         modelProvider: agentConfig.modelProvider,
         imageModelProvider: agentConfig.imageModelProvider,
@@ -88,10 +58,10 @@ export const AgentUploader = ({ cultId, onSuccess }: AgentUploaderProps) => {
       const { error } = await supabase.from("cult_agents").insert({
         cult_id: cultId,
         name: agentConfig.name,
-        description: description,
-        personality: personality,
+        description,
+        personality,
         knowledge: agentConfig.knowledge,
-        capabilities: capabilities as any, // Type assertion needed due to Supabase's Json type limitations
+        capabilities,
       });
 
       if (error) throw error;
