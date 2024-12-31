@@ -19,4 +19,8 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  define: {
+    'import.meta.env.VITE_VERCEL_URL': JSON.stringify(process.env.VERCEL_URL),
+    'import.meta.env.VITE_SITE_URL': JSON.stringify(process.env.SITE_URL),
+  }
 }));
