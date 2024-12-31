@@ -3,23 +3,58 @@ import { Button } from "@/components/ui/button";
 import { Home, LogOut } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useEffect, useState } from "react";
 
 export const Navbar = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [isSigningOut, setIsSigningOut] = useState(false);
+
+  // Check session on mount and redirect if no session
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        navigate('/');
+      }
+    };
+    
+    checkSession();
+
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_OUT') {
+        navigate('/');
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [navigate]);
 
   const handleSignOut = async () => {
+    if (isSigningOut) return; // Prevent multiple sign-out attempts
+
     try {
-      await supabase.auth.signOut();
+      setIsSigningOut(true);
+      const { error } = await supabase.auth.signOut();
+      
+      if (error) throw error;
+
       toast({
         title: "Signed out successfully",
         description: "You have been logged out.",
       });
     } catch (error) {
       console.error("Sign out error:", error);
+      toast({
+        title: "Error signing out",
+        description: "Please try again.",
+        variant: "destructive",
+      });
     } finally {
-      // Always navigate to home, regardless of success/failure
-      navigate("/");
+      setIsSigningOut(false);
     }
   };
 
@@ -40,9 +75,10 @@ export const Navbar = () => {
             variant="ghost"
             className="text-cultWhite hover:text-cultGlow"
             onClick={handleSignOut}
+            disabled={isSigningOut}
           >
             <LogOut className="h-5 w-5 mr-2" />
-            Sign Out
+            {isSigningOut ? "Signing out..." : "Sign Out"}
           </Button>
         </div>
       </div>
