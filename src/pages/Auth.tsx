@@ -17,6 +17,8 @@ const AuthPage = () => {
       }
     };
 
+    checkUser();
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session) {
         navigate("/dashboard");
