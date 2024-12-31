@@ -1,16 +1,28 @@
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { Code2, Cpu, Globe, Shield, Terminal, Waves } from "lucide-react";
+import { Code2, Cpu, Globe, Shield, Terminal, Waves, ArrowRight } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useEffect } from "react";
 
 const Index = () => {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        navigate('/dashboard');
+      }
+    };
+    
+    checkAuth();
+  }, [navigate]);
 
   return (
     <div className="min-h-screen bg-cultDark overflow-hidden">
       {/* Animated background pattern */}
       <div className="fixed inset-0 sacred-pattern opacity-5" />
       
-      {/* Hero Section */}
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
         {/* Floating tech elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">

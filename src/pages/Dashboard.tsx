@@ -2,11 +2,13 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Cult } from "@/types/cult";
 import { LandingPageContent } from "@/types/landing";
-import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Navbar } from "@/components/ui/navbar";
+import CreateCultDialog from "@/components/dashboard/CreateCultDialog";
+import CultCard from "@/components/dashboard/CultCard";
 
 const Dashboard = () => {
-  const { data: cults, isLoading } = useQuery({
+  const { data: cults, isLoading, refetch } = useQuery({
     queryKey: ['cults'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -16,13 +18,35 @@ const Dashboard = () => {
 
       if (error) throw error;
 
-      // Ensure each cult has the correct landing_page_content structure
       return (data || []).map(cult => ({
         ...cult,
         landing_page_content: (cult.landing_page_content as any as LandingPageContent) || { sections: [] }
       })) as Cult[];
     },
   });
+
+  const handleJoinCult = async (cultId: string) => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        navigate('/auth');
+        return;
+      }
+
+      const { error } = await supabase
+        .from('cult_members')
+        .insert({
+          cult_id: cultId,
+          profile_id: session.user.id,
+        });
+
+      if (error) throw error;
+
+      refetch();
+    } catch (error) {
+      console.error('Error joining cult:', error);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -34,28 +58,32 @@ const Dashboard = () => {
     );
   }
 
-  if (!cults || cults.length === 0) {
-    return (
-      <div className="min-h-screen bg-cultDark p-4">
-        <Alert variant="destructive">
-          <AlertDescription>No cults found.</AlertDescription>
-        </Alert>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-cultDark to-cultPurple p-4">
-      <div className="max-w-7xl mx-auto space-y-6">
-        {cults.map(cult => (
-          <div key={cult.id} className="bg-cultDark/50 border border-cultGlow p-4 rounded-lg">
-            <h2 className="text-cultWhite text-xl">{cult.name}</h2>
-            <p className="text-cultWhite/80">{cult.description}</p>
-            <Button variant="outline" className="mt-2">
-              View Cult
-            </Button>
+    <div className="min-h-screen bg-gradient-to-br from-cultDark to-cultPurple">
+      <Navbar />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-3xl font-bold text-cultWhite">Your Cults</h1>
+          <CreateCultDialog onCultCreated={refetch} />
+        </div>
+        
+        {!cults || cults.length === 0 ? (
+          <Alert>
+            <AlertDescription>
+              No cults found. Create your first cult to begin your journey.
+            </AlertDescription>
+          </Alert>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {cults.map(cult => (
+              <CultCard 
+                key={cult.id} 
+                cult={cult}
+                onJoin={handleJoinCult}
+              />
+            ))}
           </div>
-        ))}
+        )}
       </div>
     </div>
   );
