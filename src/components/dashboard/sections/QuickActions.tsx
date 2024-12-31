@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { UserPlus, MessageSquare, Share2, Brain, Coins, Bot } from "lucide-react";
+import { UserPlus, MessageSquare, Share2 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -15,7 +15,6 @@ export const QuickActions = ({ cultId, cultName }: QuickActionsProps) => {
   const { toast } = useToast();
 
   const generateInviteLink = async () => {
-    // In a real app, you'd want to generate a unique invite link
     const link = `${window.location.origin}/join/${cultId}`;
     setInviteLink(link);
     await navigator.clipboard.writeText(link);
@@ -23,22 +22,6 @@ export const QuickActions = ({ cultId, cultName }: QuickActionsProps) => {
       title: "Invite Link Copied!",
       description: "Share this link with potential members",
     });
-  };
-
-  const handleAIAgentCreation = async () => {
-    toast({
-      title: "Creating AI Agent",
-      description: "Your personal AI assistant is being initialized...",
-    });
-    // Here you would integrate with your AI service
-  };
-
-  const handleTokenCreation = async () => {
-    toast({
-      title: "Token Creation",
-      description: "Community token creation will be available soon!",
-    });
-    // Here you would integrate with your crypto service
   };
 
   return (
@@ -73,24 +56,6 @@ export const QuickActions = ({ cultId, cultName }: QuickActionsProps) => {
         </DialogContent>
       </Dialog>
 
-      <Button 
-        variant="outline"
-        className="flex flex-col items-center gap-2 h-auto py-4 border-cultGlow text-cultWhite hover:bg-cultPurple/20"
-        onClick={handleAIAgentCreation}
-      >
-        <Bot className="h-6 w-6" />
-        <span>Create AI Agent</span>
-      </Button>
-
-      <Button 
-        variant="outline"
-        className="flex flex-col items-center gap-2 h-auto py-4 border-cultGlow text-cultWhite hover:bg-cultPurple/20"
-        onClick={handleTokenCreation}
-      >
-        <Coins className="h-6 w-6" />
-        <span>Launch Token</span>
-      </Button>
-
       <Dialog>
         <DialogTrigger asChild>
           <Button 
@@ -98,15 +63,15 @@ export const QuickActions = ({ cultId, cultName }: QuickActionsProps) => {
             className="flex flex-col items-center gap-2 h-auto py-4 border-cultGlow text-cultWhite hover:bg-cultPurple/20"
           >
             <MessageSquare className="h-6 w-6" />
-            <span>AI Chat</span>
+            <span>Community Chat</span>
           </Button>
         </DialogTrigger>
         <DialogContent className="bg-cultDark border-cultGlow">
           <DialogHeader>
-            <DialogTitle className="text-cultWhite">Chat with Cult AI</DialogTitle>
+            <DialogTitle className="text-cultWhite">Community Chat</DialogTitle>
           </DialogHeader>
           <div className="h-[400px] flex items-center justify-center text-cultWhite/60">
-            AI Chat interface coming soon...
+            Chat interface coming soon...
           </div>
         </DialogContent>
       </Dialog>
@@ -115,16 +80,8 @@ export const QuickActions = ({ cultId, cultName }: QuickActionsProps) => {
         variant="outline"
         className="flex flex-col items-center gap-2 h-auto py-4 border-cultGlow text-cultWhite hover:bg-cultPurple/20"
       >
-        <Brain className="h-6 w-6" />
-        <span>Train Agent</span>
-      </Button>
-
-      <Button 
-        variant="outline"
-        className="flex flex-col items-center gap-2 h-auto py-4 border-cultGlow text-cultWhite hover:bg-cultPurple/20"
-      >
         <Share2 className="h-6 w-6" />
-        <span>Share Cult</span>
+        <span>Share Community</span>
       </Button>
     </div>
   );
