@@ -6,7 +6,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { Profile } from "@/types/profile";
 import { Cult } from "@/types/cult";
-import { ProfileManagement } from "@/components/dashboard/sections/profile/ProfileManagement";
+import ProfileManagement from "@/components/dashboard/sections/profile/ProfileManagement";
 import CultCard from "@/components/dashboard/CultCard";
 import CreateCultDialog from "@/components/dashboard/CreateCultDialog";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
