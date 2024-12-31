@@ -32,11 +32,17 @@ export const JoinApplicationForm = ({ cultId }: JoinApplicationFormProps) => {
   const onSubmit = async (data: ApplicationFormData) => {
     setIsSubmitting(true);
     try {
+      // Convert the form data to a format that matches the Json type
+      const applicationData = {
+        motivation: data.motivation,
+        experience: data.experience
+      } as { [key: string]: string };
+
       const { error } = await supabase
         .from('cult_join_applications')
         .insert({
           cult_id: cultId,
-          application_data: data as Json,
+          application_data: applicationData,
         });
 
       if (error) throw error;
