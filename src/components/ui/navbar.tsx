@@ -34,8 +34,8 @@ export const Navbar = () => {
         scope: 'local'
       });
 
-      // Navigate immediately after clearing local session
-      navigate('/');
+      // Navigate to root and force refresh
+      window.location.href = '/';
       
       toast({
         title: "Signed out successfully",
@@ -43,8 +43,8 @@ export const Navbar = () => {
       });
     } catch (error) {
       console.error("Sign out error:", error);
-      // Still navigate even if there's an error
-      navigate('/');
+      // Still navigate and refresh even if there's an error
+      window.location.href = '/';
       
       toast({
         title: "Session ended",
