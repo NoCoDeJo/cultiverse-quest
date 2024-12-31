@@ -62,10 +62,12 @@ const CultDashboard = () => {
     );
   }
 
+  // Dynamic gradient based on cult's theme color
+  const gradientStyle = `from-cultDark to-[${cult.theme_color}]`;
+
   return (
     <div 
-      className="min-h-screen bg-gradient-to-br from-cultDark to-cultPurple p-4"
-      style={{ '--tw-gradient-to': cult.theme_color }}
+      className={`min-h-screen bg-gradient-to-br ${gradientStyle} p-4`}
     >
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
