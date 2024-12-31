@@ -6,10 +6,16 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Navbar } from "@/components/ui/navbar";
 import CreateCultDialog from "@/components/dashboard/CreateCultDialog";
 import CultCard from "@/components/dashboard/CultCard";
-import { useNavigate } from "react-router-dom"; // Added import
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { useAI } from "@/hooks/useAI";
+import { useToast } from "@/hooks/use-toast";
 
 const Dashboard = () => {
-  const navigate = useNavigate(); // Added navigation hook
+  const navigate = useNavigate();
+  const { generateWithAI } = useAI();
+  const { toast } = useToast();
+
   const { data: cults, isLoading, refetch } = useQuery({
     queryKey: ['cults'],
     queryFn: async () => {
@@ -31,7 +37,7 @@ const Dashboard = () => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        navigate('/auth'); // Use navigate instead of direct navigation
+        navigate('/auth');
         return;
       }
 
@@ -47,6 +53,25 @@ const Dashboard = () => {
       refetch();
     } catch (error) {
       console.error('Error joining cult:', error);
+    }
+  };
+
+  const testAI = async () => {
+    try {
+      const response = await generateWithAI("Hello! Please confirm if you're working properly by responding with a short greeting.");
+      if (response) {
+        toast({
+          title: "AI Response",
+          description: response,
+        });
+      }
+    } catch (error) {
+      console.error('AI test error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to test AI integration",
+        variant: "destructive",
+      });
     }
   };
 
@@ -66,7 +91,16 @@ const Dashboard = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold text-cultWhite">Your Cults</h1>
-          <CreateCultDialog onCultCreated={refetch} />
+          <div className="flex gap-4">
+            <Button
+              variant="outline"
+              onClick={testAI}
+              className="border-cultGlow text-cultWhite hover:bg-cultPurple/20"
+            >
+              Test AI Integration
+            </Button>
+            <CreateCultDialog onCultCreated={refetch} />
+          </div>
         </div>
         
         {!cults || cults.length === 0 ? (
