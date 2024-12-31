@@ -17,6 +17,7 @@ import { LinksSection } from "@/components/dashboard/sections/LinksSection";
 import { ImageManagement } from "@/components/dashboard/sections/ImageManagement";
 import { CommunityManagement } from "@/components/dashboard/sections/CommunityManagement";
 import { AgentSection } from "@/components/dashboard/sections/agents/AgentSection";
+import CultAboutEditor from "@/components/dashboard/sections/CultAboutEditor";
 
 const CultDashboard = () => {
   const { cultId } = useParams();
@@ -41,7 +42,6 @@ const CultDashboard = () => {
         throw error;
       }
 
-      // Ensure landing_page_content has the correct structure with proper type casting
       const landingContent = (data.landing_page_content as any as LandingPageContent) || { sections: [] };
       return {
         ...data,
@@ -80,7 +80,6 @@ const CultDashboard = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-cultDark to-cultPurple p-4">
       <div className="max-w-7xl mx-auto space-y-6">
-        {/* Header with Banner */}
         <div className="relative rounded-lg overflow-hidden">
           {cult.banner_url ? (
             <img 
@@ -182,17 +181,11 @@ const CultDashboard = () => {
             {/* Links Section */}
             <LinksSection />
 
-            {/* Description */}
-            <Card className="bg-cultDark/50 border-cultGlow">
-              <CardHeader>
-                <CardTitle className="text-cultWhite">About</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-cultWhite/80">
-                  {cult.description || 'No description provided.'}
-                </p>
-              </CardContent>
-            </Card>
+            {/* About Section - Now using CultAboutEditor */}
+            <CultAboutEditor 
+              cultId={cult.id} 
+              initialDescription={cult.description} 
+            />
           </div>
         </div>
       </div>
