@@ -51,12 +51,12 @@ const AuthPage = () => {
       if (event === 'TOKEN_REFRESHED') {
         console.log("Token refreshed:", session);
       }
-      if (event === 'AUTH_ERROR') {  // Changed from 'ERROR' to 'AUTH_ERROR'
-        console.error("Auth error:", session);
+      if (event === 'USER_DELETED' || event === 'PASSWORD_RECOVERY') {
+        console.error("Auth event:", event, session);
         toast({
           variant: "destructive",
-          title: "Authentication Error",
-          description: "There was an error during authentication. Please try again.",
+          title: "Authentication Event",
+          description: `${event} event occurred`,
         });
       }
     });
