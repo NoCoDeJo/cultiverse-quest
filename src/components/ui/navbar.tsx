@@ -9,16 +9,38 @@ export const Navbar = () => {
   const { toast } = useToast();
 
   const handleSignOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
+    try {
+      // First check if we have a session
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        // If no session, just redirect to home
+        navigate("/");
+        return;
+      }
+
+      // Proceed with sign out
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error("Sign out error:", error);
+        toast({
+          title: "Error signing out",
+          description: error.message,
+          variant: "destructive",
+        });
+        return;
+      }
+
       toast({
-        title: "Error signing out",
-        description: error.message,
-        variant: "destructive",
+        title: "Signed out successfully",
+        description: "You have been logged out.",
       });
-      return;
+      navigate("/");
+    } catch (error) {
+      console.error("Sign out error:", error);
+      // If any error occurs, force navigate to home
+      navigate("/");
     }
-    navigate("/");
   };
 
   return (
