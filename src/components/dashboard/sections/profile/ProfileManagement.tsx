@@ -15,18 +15,11 @@ export const ProfileManagement = ({ profile }: ProfileManagementProps) => {
         currentName={profile.sacred_name} 
       />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="max-w-md mx-auto">
         <ImageUploader
           currentImageUrl={profile.profile_image_url}
           type="profile"
           profileId={profile.id}
-        />
-        <ImageUploader
-          currentImageUrl={profile.banner_image_url}
-          type="banner"
-          profileId={profile.id}
-          aspectRatio="aspect-[3/1]"
-          maxWidth="w-full"
         />
       </div>
 
