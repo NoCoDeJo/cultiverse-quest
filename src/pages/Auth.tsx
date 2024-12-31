@@ -51,7 +51,7 @@ const AuthPage = () => {
       if (event === 'TOKEN_REFRESHED') {
         console.log("Token refreshed:", session);
       }
-      if (event === 'ERROR') {
+      if (event === 'AUTH_ERROR') {  // Changed from 'ERROR' to 'AUTH_ERROR'
         console.error("Auth error:", session);
         toast({
           variant: "destructive",
