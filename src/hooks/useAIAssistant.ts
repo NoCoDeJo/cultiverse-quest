@@ -12,19 +12,31 @@ export const useAIAssistant = () => {
       - A unique and memorable cult name
       - A compelling description (2-3 sentences)
       - A theme color (hex code)
-      - A Twitter handle (without @ symbol)
+      - A twitter handle (without @ symbol)
       Format as JSON with keys: name, description, theme_color, twitter_handle`;
 
+      console.log('Sending prompt to AI:', prompt);
       const response = await generateWithAI(prompt);
+      console.log('Received AI response:', response);
+
       if (!response) throw new Error("No response from AI");
 
-      const data = JSON.parse(response);
-      return data;
+      try {
+        const data = JSON.parse(response);
+        // Validate the required fields
+        if (!data.name || !data.description || !data.theme_color || !data.twitter_handle) {
+          throw new Error("Missing required fields in AI response");
+        }
+        return data;
+      } catch (parseError) {
+        console.error('Error parsing AI response:', parseError);
+        throw new Error("Invalid AI response format");
+      }
     } catch (error) {
       console.error("Error generating cult info:", error);
       toast({
         title: "Error",
-        description: "Failed to generate cult information",
+        description: "Failed to generate cult information. Please try again.",
         variant: "destructive",
       });
       return null;
@@ -66,7 +78,10 @@ export const useAIAssistant = () => {
   const generateDescription = async (topic: string) => {
     try {
       const prompt = `Write a compelling 2-3 sentence description for ${topic}. Make it mystical and engaging.`;
+      console.log('Sending description prompt:', prompt);
       const response = await generateWithAI(prompt);
+      console.log('Received description response:', response);
+
       if (!response) throw new Error("No response from AI");
       return response;
     } catch (error) {
@@ -85,11 +100,19 @@ export const useAIAssistant = () => {
       const prompt = `Generate 3-4 important links for a cult named "${cultName}" of type "${cultType}". 
       Format as JSON array with objects containing: title, url`;
 
+      console.log('Sending landing content prompt:', prompt);
       const response = await generateWithAI(prompt);
+      console.log('Received landing content response:', response);
+
       if (!response) throw new Error("No response from AI");
 
-      const data = JSON.parse(response);
-      return data;
+      try {
+        const data = JSON.parse(response);
+        return data;
+      } catch (parseError) {
+        console.error('Error parsing landing content response:', parseError);
+        throw new Error("Invalid landing content format");
+      }
     } catch (error) {
       console.error("Error generating landing content:", error);
       toast({

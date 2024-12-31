@@ -2,7 +2,7 @@ import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const galadrielApiKey = Deno.env.get('GALADRIEL_API_KEY');
-const gaianetModel = Deno.env.get('GAIANET_MODEL') || 'qwen7b';
+const gaianetModel = Deno.env.get('GAIANET_MODEL') || 'gpt-4o-mini';
 const gaianetServerUrl = Deno.env.get('GAIANET_SERVER_URL') || 'https://qwen7b.gaia.domains/v1';
 
 const corsHeaders = {
@@ -44,7 +44,7 @@ serve(async (req) => {
       body: JSON.stringify({
         model: gaianetModel,
         messages: [
-          { role: 'system', content: 'You are a helpful AI assistant for the cult dashboard, providing insights and suggestions.' },
+          { role: 'system', content: 'You are a helpful AI assistant for the cult dashboard, providing insights and suggestions. Always return data in the exact format requested by the user.' },
           { role: 'user', content: prompt }
         ],
         temperature: 0.7,
