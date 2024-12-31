@@ -17,6 +17,7 @@ export const useFilteredCults = (cults: Cult[] | undefined, currentUserId: strin
         .from('cult_members')
         .select('cult_id')
         .eq('profile_id', currentUserId);
+      console.log('Fetched memberships:', data);
       return data || [];
     },
     enabled: !!currentUserId,
@@ -24,8 +25,23 @@ export const useFilteredCults = (cults: Cult[] | undefined, currentUserId: strin
 
   // Create a Set of cult IDs where the user is a member
   const memberCultIds = new Set(memberships?.map(m => m.cult_id));
+  
+  console.log('Current user ID:', currentUserId);
+  console.log('All cults:', cults);
+  console.log('Active tab:', activeTab);
+  console.log('Member cult IDs:', Array.from(memberCultIds));
 
   const filteredCults = cults?.filter(cult => {
+    const isFounder = cult.founder_id === currentUserId;
+    const isMember = memberCultIds.has(cult.id);
+    
+    console.log('Checking cult:', cult.name, {
+      isFounder,
+      isMember,
+      founder_id: cult.founder_id,
+      currentUserId
+    });
+
     // Filter by search query
     const matchesSearch = cult.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       cult.description?.toLowerCase().includes(searchQuery.toLowerCase());
@@ -35,13 +51,12 @@ export const useFilteredCults = (cults: Cult[] | undefined, currentUserId: strin
 
     // Filter by ownership/membership
     const matchesTab = activeTab === 'discover' || 
-      (activeTab === 'my-cults' && (
-        cult.founder_id === currentUserId || // User is founder
-        memberCultIds.has(cult.id)           // User is member
-      ));
+      (activeTab === 'my-cults' && (isFounder || isMember));
 
     return matchesSearch && matchesType && matchesTab;
   });
+
+  console.log('Filtered cults:', filteredCults);
 
   return {
     searchQuery,
