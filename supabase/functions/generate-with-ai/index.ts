@@ -1,7 +1,9 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
-const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+const galadrielApiKey = Deno.env.get('GALADRIEL_API_KEY');
+const gaianetModel = Deno.env.get('GAIANET_MODEL') || 'qwen7b';
+const gaianetServerUrl = Deno.env.get('GAIANET_SERVER_URL') || 'https://qwen7b.gaia.domains/v1';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -14,9 +16,9 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  if (!openAIApiKey) {
+  if (!galadrielApiKey) {
     return new Response(
-      JSON.stringify({ error: 'OpenAI API key not configured' }),
+      JSON.stringify({ error: 'Galadriel API key not configured' }),
       { 
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -31,29 +33,34 @@ serve(async (req) => {
       throw new Error('No prompt provided');
     }
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    console.log(`Sending request to Gaia Net (${gaianetModel}) with prompt: ${prompt}`);
+
+    const response = await fetch(gaianetServerUrl + '/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${openAIApiKey}`,
+        'Authorization': `Bearer ${galadrielApiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4',
+        model: gaianetModel,
         messages: [
           { role: 'system', content: 'You are a helpful AI assistant for the cult dashboard, providing insights and suggestions.' },
           { role: 'user', content: prompt }
         ],
-        max_tokens: 500,
         temperature: 0.7,
+        max_tokens: 500,
       }),
     });
 
     if (!response.ok) {
       const error = await response.json();
+      console.error('Gaia Net API error:', error);
       throw new Error(error.error?.message || 'Failed to generate response');
     }
 
     const data = await response.json();
+    console.log('Gaia Net response:', data);
+    
     const generatedText = data.choices[0].message.content;
 
     return new Response(
