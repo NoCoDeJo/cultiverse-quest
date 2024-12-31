@@ -8,23 +8,21 @@ import CreateCultDialog from "@/components/dashboard/CreateCultDialog";
 import CultCard from "@/components/dashboard/CultCard";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAI } from "@/hooks/useAI";
 import { useToast } from "@/hooks/use-toast";
-import { Globe, Search, Users } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Globe, Users } from "lucide-react";
+import { SearchAndFilters } from "@/components/dashboard/SearchAndFilters";
+import { useFilteredCults } from "@/hooks/useFilteredCults";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const { generateWithAI } = useAI();
   const { toast } = useToast();
+
+  // Get current user session
+  const { data: session } = await supabase.auth.getSession();
+  const currentUserId = session?.user?.id;
 
   const { data: cults, isLoading, refetch } = useQuery({
     queryKey: ['cults'],
@@ -43,9 +41,18 @@ const Dashboard = () => {
     },
   });
 
+  const {
+    searchQuery,
+    setSearchQuery,
+    cultType,
+    setCultType,
+    activeTab,
+    setActiveTab,
+    filteredCults
+  } = useFilteredCults(cults, currentUserId);
+
   const handleJoinCult = async (cultId: string) => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
         navigate('/auth');
         return;
@@ -55,7 +62,7 @@ const Dashboard = () => {
         .from('cult_members')
         .insert({
           cult_id: cultId,
-          profile_id: session.user.id,
+          profile_id: currentUserId,
         });
 
       if (error) throw error;
@@ -128,28 +135,15 @@ const Dashboard = () => {
           </div>
 
           {/* Search and Filter Section */}
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-cultWhite/60" />
-              <Input
-                placeholder="Search cults..."
-                className="pl-10 bg-cultDark/50 border-cultGlow text-cultWhite placeholder:text-cultWhite/60"
-              />
-            </div>
-            <Select defaultValue="all">
-              <SelectTrigger className="w-[180px] border-cultGlow text-cultWhite bg-cultDark/50">
-                <SelectValue placeholder="Type" />
-              </SelectTrigger>
-              <SelectContent className="bg-cultDark border-cultGlow">
-                <SelectItem value="all">All Types</SelectItem>
-                <SelectItem value="dev">Developer</SelectItem>
-                <SelectItem value="agent">AI Agent</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <SearchAndFilters
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            cultType={cultType}
+            onTypeChange={setCultType}
+          />
 
           {/* Main Content Tabs */}
-          <Tabs defaultValue="discover" className="w-full">
+          <Tabs value={activeTab} onValueChange={(value: string) => setActiveTab(value as 'discover' | 'my-cults')}>
             <TabsList className="bg-cultDark/50 border-cultGlow">
               <TabsTrigger value="discover" className="text-cultWhite">
                 <Globe className="w-4 h-4 mr-2" />
@@ -161,16 +155,18 @@ const Dashboard = () => {
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="discover" className="mt-6">
-              {!cults || cults.length === 0 ? (
+            <TabsContent value={activeTab} className="mt-6">
+              {!filteredCults || filteredCults.length === 0 ? (
                 <Alert>
                   <AlertDescription className="text-cultWhite">
-                    No cults found. Create your first cult to begin your journey.
+                    {activeTab === 'my-cults' 
+                      ? "You haven't created any cults yet. Create your first cult to begin your journey."
+                      : "No cults found matching your search criteria."}
                   </AlertDescription>
                 </Alert>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {cults.map(cult => (
+                  {filteredCults.map(cult => (
                     <CultCard 
                       key={cult.id} 
                       cult={cult}
@@ -179,18 +175,6 @@ const Dashboard = () => {
                   ))}
                 </div>
               )}
-            </TabsContent>
-
-            <TabsContent value="my-cults" className="mt-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {cults?.filter(cult => cult.founder_id === "current_user_id").map(cult => (
-                  <CultCard 
-                    key={cult.id} 
-                    cult={cult}
-                    onJoin={handleJoinCult}
-                  />
-                ))}
-              </div>
             </TabsContent>
           </Tabs>
         </div>
