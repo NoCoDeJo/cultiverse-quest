@@ -141,6 +141,86 @@ export type Database = {
         }
         Relationships: []
       }
+      raid_participants: {
+        Row: {
+          id: string
+          joined_at: string
+          points_earned: number | null
+          profile_id: string
+          raid_id: string
+        }
+        Insert: {
+          id?: string
+          joined_at?: string
+          points_earned?: number | null
+          profile_id: string
+          raid_id: string
+        }
+        Update: {
+          id?: string
+          joined_at?: string
+          points_earned?: number | null
+          profile_id?: string
+          raid_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "raid_participants_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "raid_participants_raid_id_fkey"
+            columns: ["raid_id"]
+            isOneToOne: false
+            referencedRelation: "raids"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      raids: {
+        Row: {
+          created_at: string
+          cult_id: string
+          ended_at: string | null
+          id: string
+          participants_count: number | null
+          points_pool: number | null
+          status: string
+          target_url: string
+        }
+        Insert: {
+          created_at?: string
+          cult_id: string
+          ended_at?: string | null
+          id?: string
+          participants_count?: number | null
+          points_pool?: number | null
+          status?: string
+          target_url: string
+        }
+        Update: {
+          created_at?: string
+          cult_id?: string
+          ended_at?: string | null
+          id?: string
+          participants_count?: number | null
+          points_pool?: number | null
+          status?: string
+          target_url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "raids_cult_id_fkey"
+            columns: ["cult_id"]
+            isOneToOne: false
+            referencedRelation: "cults"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
