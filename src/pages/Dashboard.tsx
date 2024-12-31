@@ -26,55 +26,71 @@ const Dashboard = () => {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [cults, setCults] = useState<Cult[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const checkUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        navigate("/auth");
-        return;
-      }
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+          navigate("/auth");
+          return;
+        }
 
-      // Fetch profile data
-      const { data: profileData, error: profileError } = await supabase
-        .from('profiles')
-        .select('sacred_name, worthiness_score')
-        .eq('id', session.user.id)
-        .maybeSingle();
+        // Fetch profile data with retry logic
+        const fetchProfile = async (retryCount = 0) => {
+          const { data: profileData, error: profileError } = await supabase
+            .from('profiles')
+            .select('sacred_name, worthiness_score')
+            .eq('id', session.user.id)
+            .maybeSingle();
 
-      if (profileError) {
-        toast({
-          title: "Error",
-          description: "Failed to load profile",
-          variant: "destructive",
-        });
-      } else if (!profileData) {
-        toast({
-          title: "Profile Not Found",
-          description: "Your profile could not be found. Please try signing out and in again.",
-          variant: "destructive",
-        });
-      } else {
+          if (profileError) {
+            throw new Error("Failed to load profile");
+          }
+
+          if (!profileData && retryCount < 3) {
+            // Wait for a short delay before retrying
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            return fetchProfile(retryCount + 1);
+          }
+
+          if (!profileData) {
+            throw new Error("Profile not found. Please try signing out and in again.");
+          }
+
+          return profileData;
+        };
+
+        const profileData = await fetchProfile();
         setProfile(profileData);
-      }
 
-      // Fetch available cults
-      const { data: cultsData, error: cultsError } = await supabase
-        .from('cults')
-        .select('*')
-        .eq('visibility', 'public');
+        // Fetch available cults
+        const { data: cultsData, error: cultsError } = await supabase
+          .from('cults')
+          .select('*')
+          .eq('visibility', 'public');
 
-      if (cultsError) {
+        if (cultsError) {
+          toast({
+            title: "Error",
+            description: "Failed to load cults",
+            variant: "destructive",
+          });
+        } else {
+          setCults(cultsData || []);
+        }
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : "An unexpected error occurred";
+        setError(errorMessage);
         toast({
           title: "Error",
-          description: "Failed to load cults",
+          description: errorMessage,
           variant: "destructive",
         });
-      } else {
-        setCults(cultsData || []);
+      } finally {
+        setLoading(false);
       }
-
-      setLoading(false);
     };
     
     checkUser();
@@ -90,6 +106,25 @@ const Dashboard = () => {
       <div className="min-h-screen bg-cultDark flex items-center justify-center">
         <div className="text-cultWhite text-xl animate-pulse">
           Channeling mystical energies...
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-cultDark p-4">
+        <div className="max-w-7xl mx-auto">
+          <Alert variant="destructive">
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+          <Button 
+            variant="outline" 
+            onClick={handleSignOut}
+            className="mt-4 border-cultGlow text-cultWhite hover:bg-cultPurple/50"
+          >
+            Sign Out and Try Again
+          </Button>
         </div>
       </div>
     );
@@ -111,13 +146,7 @@ const Dashboard = () => {
         </div>
 
         {/* Profile Section */}
-        {!profile ? (
-          <Alert variant="destructive">
-            <AlertDescription>
-              Your profile could not be found. Please try signing out and in again.
-            </AlertDescription>
-          </Alert>
-        ) : (
+        {profile && (
           <Card className="bg-cultDark/80 border-cultGlow glow-border">
             <CardHeader>
               <CardTitle className="text-cultWhite">Sacred Identity</CardTitle>
