@@ -16,19 +16,31 @@ export const RaidSection = () => {
   const { data: activeRaid } = useQuery({
     queryKey: ['activeRaid', cultId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // First get the raid details
+      const { data: raid, error } = await supabase
         .from('raids')
-        .select('*, raid_participants(count)')
+        .select('*')
         .eq('cult_id', cultId)
         .eq('status', 'active')
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.error('Error fetching active raid:', error);
         return null;
       }
 
-      return data;
+      if (!raid) return null;
+
+      // Then get the participant count separately
+      const { count: participantCount } = await supabase
+        .from('raid_participants')
+        .select('*', { count: 'exact', head: true })
+        .eq('raid_id', raid.id);
+
+      return {
+        ...raid,
+        participant_count: participantCount || 0
+      };
     },
   });
 
@@ -118,7 +130,7 @@ export const RaidSection = () => {
             <p className="text-cultWhite/80 mb-4">Target: {activeRaid.target_url}</p>
             <div className="flex items-center justify-between">
               <span className="text-cultWhite/60">
-                {activeRaid.raid_participants?.[0]?.count || 0} participants
+                {activeRaid.participant_count} participants
               </span>
               <Button
                 variant="outline"
