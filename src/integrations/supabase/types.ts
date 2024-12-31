@@ -149,6 +149,61 @@ export type Database = {
           },
         ]
       }
+      cult_join_applications: {
+        Row: {
+          application_data: Json | null
+          cult_id: string | null
+          id: string
+          profile_id: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          submitted_at: string
+        }
+        Insert: {
+          application_data?: Json | null
+          cult_id?: string | null
+          id?: string
+          profile_id?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          submitted_at?: string
+        }
+        Update: {
+          application_data?: Json | null
+          cult_id?: string | null
+          id?: string
+          profile_id?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          submitted_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cult_join_applications_cult_id_fkey"
+            columns: ["cult_id"]
+            isOneToOne: false
+            referencedRelation: "cults"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cult_join_applications_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cult_join_applications_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cult_members: {
         Row: {
           cult_id: string
@@ -204,6 +259,7 @@ export type Database = {
           description: string | null
           founder_id: string | null
           id: string
+          join_type: string
           landing_page_content: Json | null
           linked_agents_count: number | null
           logo_url: string | null
@@ -222,6 +278,7 @@ export type Database = {
           description?: string | null
           founder_id?: string | null
           id?: string
+          join_type?: string
           landing_page_content?: Json | null
           linked_agents_count?: number | null
           logo_url?: string | null
@@ -240,6 +297,7 @@ export type Database = {
           description?: string | null
           founder_id?: string | null
           id?: string
+          join_type?: string
           landing_page_content?: Json | null
           linked_agents_count?: number | null
           logo_url?: string | null

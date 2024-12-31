@@ -7,6 +7,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useSession } from "@supabase/auth-helpers-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { JoinApplicationForm } from "./JoinApplicationForm";
 
 interface CultCardProps {
   cult: Cult;
@@ -34,8 +36,90 @@ const CultCard: React.FC<CultCardProps> = ({ cult, onJoin }) => {
     enabled: !!currentUserId,
   });
 
+  // Check if user has a pending application
+  const { data: pendingApplication } = useQuery({
+    queryKey: ['cult-application', cult.id, currentUserId],
+    queryFn: async () => {
+      if (!currentUserId) return null;
+      const { data } = await supabase
+        .from('cult_join_applications')
+        .select('*')
+        .eq('cult_id', cult.id)
+        .eq('profile_id', currentUserId)
+        .eq('status', 'pending')
+        .single();
+      return data;
+    },
+    enabled: !!currentUserId,
+  });
+
   const isFounder = cult.founder_id === currentUserId;
   const isMember = !!membership;
+  const hasPendingApplication = !!pendingApplication;
+
+  const renderJoinButton = () => {
+    if (!session) {
+      return (
+        <Button 
+          variant="outline" 
+          className="flex-1 border-cultGlow text-cultWhite hover:bg-cultPurple/50"
+          onClick={() => navigate('/auth')}
+        >
+          <Users className="mr-2 h-4 w-4" />
+          Sign in to Join
+        </Button>
+      );
+    }
+
+    if (isFounder || isMember) {
+      return null;
+    }
+
+    if (hasPendingApplication) {
+      return (
+        <Button 
+          variant="outline" 
+          className="flex-1 border-cultGlow text-cultWhite hover:bg-cultPurple/50"
+          disabled
+        >
+          Application Pending
+        </Button>
+      );
+    }
+
+    if (cult.join_type === 'public') {
+      return (
+        <Button 
+          variant="outline" 
+          className="flex-1 border-cultGlow text-cultWhite hover:bg-cultPurple/50"
+          onClick={() => onJoin(cult.id)}
+        >
+          <Users className="mr-2 h-4 w-4" />
+          Join
+        </Button>
+      );
+    }
+
+    return (
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button 
+            variant="outline" 
+            className="flex-1 border-cultGlow text-cultWhite hover:bg-cultPurple/50"
+          >
+            <Users className="mr-2 h-4 w-4" />
+            Apply to Join
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="bg-cultDark border-cultGlow">
+          <DialogHeader>
+            <DialogTitle className="text-cultWhite">Join {cult.name}</DialogTitle>
+          </DialogHeader>
+          <JoinApplicationForm cultId={cult.id} />
+        </DialogContent>
+      </Dialog>
+    );
+  };
 
   return (
     <Card 
@@ -87,18 +171,14 @@ const CultCard: React.FC<CultCardProps> = ({ cult, onJoin }) => {
               {isFounder ? 'Founder' : 'Member'}
             </span>
           )}
+          <span className={`px-2 py-1 rounded text-sm ${
+            cult.join_type === 'public' ? 'bg-blue-500/20 text-blue-300' : 'bg-purple-500/20 text-purple-300'
+          }`}>
+            {cult.join_type === 'public' ? 'Public' : 'Application Required'}
+          </span>
         </div>
         <div className="flex gap-2">
-          {!isFounder && !isMember && (
-            <Button 
-              variant="outline" 
-              className="flex-1 border-cultGlow text-cultWhite hover:bg-cultPurple/50"
-              onClick={() => onJoin(cult.id)}
-            >
-              <Users className="mr-2 h-4 w-4" />
-              Join
-            </Button>
-          )}
+          {renderJoinButton()}
           {isFounder && (
             <Button 
               variant="outline" 

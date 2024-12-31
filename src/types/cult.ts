@@ -17,4 +17,5 @@ export interface Cult {
   updated_at: string;
   custom_url: string | null;
   landing_page_content: LandingPageContent | null;
+  join_type: 'public' | 'application';
 }
