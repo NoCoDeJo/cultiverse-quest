@@ -2,8 +2,9 @@ import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
-import { Twitter, Link } from "lucide-react";
+import { Link } from "lucide-react";
+import { LandingPageContent } from "@/types/landing";
+import { Cult } from "@/types/cult";
 
 const CultLanding = () => {
   const { customUrl } = useParams();
@@ -18,7 +19,7 @@ const CultLanding = () => {
         .single();
 
       if (error) throw error;
-      return data;
+      return data as Cult;
     },
   });
 
@@ -42,7 +43,8 @@ const CultLanding = () => {
     );
   }
 
-  const landingContent = cult.landing_page_content?.sections || [];
+  // Parse the landing_page_content as LandingPageContent
+  const landingContent = (cult.landing_page_content as LandingPageContent)?.sections || [];
 
   return (
     <div 
@@ -78,7 +80,7 @@ const CultLanding = () => {
 
         {/* Links */}
         <div className="space-y-4">
-          {landingContent.map((section: any, index: number) => (
+          {landingContent.map((section, index) => (
             <a
               key={index}
               href={section.url}

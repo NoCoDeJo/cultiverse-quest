@@ -1,3 +1,5 @@
+import { LandingPageContent } from "./landing";
+
 export interface Cult {
   id: string;
   name: string;
@@ -13,4 +15,6 @@ export interface Cult {
   linked_agents_count: number | null;
   created_at: string;
   updated_at: string;
+  custom_url: string | null;
+  landing_page_content: LandingPageContent | null;
 }
