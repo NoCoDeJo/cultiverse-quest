@@ -6,8 +6,10 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Navbar } from "@/components/ui/navbar";
 import CreateCultDialog from "@/components/dashboard/CreateCultDialog";
 import CultCard from "@/components/dashboard/CultCard";
+import { useNavigate } from "react-router-dom"; // Added import
 
 const Dashboard = () => {
+  const navigate = useNavigate(); // Added navigation hook
   const { data: cults, isLoading, refetch } = useQuery({
     queryKey: ['cults'],
     queryFn: async () => {
@@ -29,7 +31,7 @@ const Dashboard = () => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        navigate('/auth');
+        navigate('/auth'); // Use navigate instead of direct navigation
         return;
       }
 
