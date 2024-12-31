@@ -54,6 +54,100 @@ export type Database = {
           },
         ]
       }
+      cult_invites: {
+        Row: {
+          code: string
+          created_at: string
+          created_by: string | null
+          cult_id: string
+          current_uses: number | null
+          expires_at: string | null
+          id: string
+          max_uses: number | null
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          created_by?: string | null
+          cult_id: string
+          current_uses?: number | null
+          expires_at?: string | null
+          id?: string
+          max_uses?: number | null
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          cult_id?: string
+          current_uses?: number | null
+          expires_at?: string | null
+          id?: string
+          max_uses?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cult_invites_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cult_invites_cult_id_fkey"
+            columns: ["cult_id"]
+            isOneToOne: false
+            referencedRelation: "cults"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cult_members: {
+        Row: {
+          cult_id: string
+          invite_id: string | null
+          joined_at: string
+          profile_id: string
+          role: string
+        }
+        Insert: {
+          cult_id: string
+          invite_id?: string | null
+          joined_at?: string
+          profile_id: string
+          role?: string
+        }
+        Update: {
+          cult_id?: string
+          invite_id?: string | null
+          joined_at?: string
+          profile_id?: string
+          role?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cult_members_cult_id_fkey"
+            columns: ["cult_id"]
+            isOneToOne: false
+            referencedRelation: "cults"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cult_members_invite_id_fkey"
+            columns: ["invite_id"]
+            isOneToOne: false
+            referencedRelation: "cult_invites"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cult_members_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cults: {
         Row: {
           created_at: string

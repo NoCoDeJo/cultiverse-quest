@@ -1,9 +1,11 @@
 import { Button } from "@/components/ui/button";
-import { UserPlus, MessageSquare, Share2 } from "lucide-react";
+import { UserPlus, MessageSquare, Share2, Copy } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { Input } from "@/components/ui/input";
+import { nanoid } from "nanoid";
 
 interface QuickActionsProps {
   cultId: string;
@@ -11,16 +13,44 @@ interface QuickActionsProps {
 }
 
 export const QuickActions = ({ cultId, cultName }: QuickActionsProps) => {
-  const [inviteLink, setInviteLink] = useState("");
+  const [inviteCode, setInviteCode] = useState("");
   const { toast } = useToast();
 
-  const generateInviteLink = async () => {
-    const link = `${window.location.origin}/join/${cultId}`;
-    setInviteLink(link);
-    await navigator.clipboard.writeText(link);
+  const generateInviteCode = async () => {
+    try {
+      const code = nanoid(10);
+      const { error } = await supabase
+        .from('cult_invites')
+        .insert({
+          cult_id: cultId,
+          code: code,
+        });
+
+      if (error) throw error;
+
+      const inviteLink = `${window.location.origin}/join/${code}`;
+      setInviteCode(inviteLink);
+      await navigator.clipboard.writeText(inviteLink);
+      
+      toast({
+        title: "Invite Link Created!",
+        description: "The link has been copied to your clipboard",
+      });
+    } catch (error) {
+      console.error('Error generating invite:', error);
+      toast({
+        title: "Error",
+        description: "Failed to generate invite link",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const copyInviteLink = async () => {
+    await navigator.clipboard.writeText(inviteCode);
     toast({
-      title: "Invite Link Copied!",
-      description: "Share this link with potential members",
+      title: "Copied!",
+      description: "Invite link copied to clipboard",
     });
   };
 
@@ -42,14 +72,30 @@ export const QuickActions = ({ cultId, cultName }: QuickActionsProps) => {
           </DialogHeader>
           <div className="space-y-4">
             <Button 
-              onClick={generateInviteLink}
+              onClick={generateInviteCode}
               className="w-full border-cultGlow text-cultWhite hover:bg-cultPurple/20"
             >
-              Generate Invite Link
+              Generate New Invite Link
             </Button>
-            {inviteLink && (
-              <div className="p-2 bg-cultPurple/20 rounded border border-cultGlow text-cultWhite break-all">
-                {inviteLink}
+            {inviteCode && (
+              <div className="space-y-2">
+                <div className="flex gap-2">
+                  <Input 
+                    value={inviteCode}
+                    readOnly
+                    className="bg-cultPurple/20 text-cultWhite"
+                  />
+                  <Button
+                    onClick={copyInviteLink}
+                    variant="outline"
+                    className="border-cultGlow text-cultWhite hover:bg-cultPurple/20"
+                  >
+                    <Copy className="h-4 w-4" />
+                  </Button>
+                </div>
+                <p className="text-sm text-cultWhite/60">
+                  Share this link with potential members
+                </p>
               </div>
             )}
           </div>

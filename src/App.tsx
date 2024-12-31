@@ -9,6 +9,7 @@ import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import Landing from "./pages/Landing";
 import CultDashboard from "./pages/CultDashboard";
+import Join from "./pages/Join";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +25,7 @@ const App = () => {
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/landing" element={<Landing />} />
               <Route path="/cult/:cultId" element={<CultDashboard />} />
+              <Route path="/join/:code" element={<Join />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
             <Toaster />
