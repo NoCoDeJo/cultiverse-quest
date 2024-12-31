@@ -1,3 +1,5 @@
+import { Json } from "@/integrations/supabase/types";
+
 export interface AgentConfig {
   name: string;
   username?: string;

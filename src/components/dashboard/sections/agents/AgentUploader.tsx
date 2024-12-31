@@ -60,8 +60,8 @@ export const AgentUploader = ({ cultId, onSuccess }: AgentUploaderProps) => {
         name: agentConfig.name,
         description,
         personality,
-        knowledge: agentConfig.knowledge,
-        capabilities,
+        knowledge: agentConfig.knowledge as any,
+        capabilities: capabilities as any,
       });
 
       if (error) throw error;
