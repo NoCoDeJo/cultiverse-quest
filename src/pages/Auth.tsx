@@ -44,6 +44,21 @@ const AuthPage = () => {
         });
         navigate("/");
       }
+      // Add logging for other auth events
+      if (event === 'USER_UPDATED') {
+        console.log("User updated:", session);
+      }
+      if (event === 'TOKEN_REFRESHED') {
+        console.log("Token refreshed:", session);
+      }
+      if (event === 'ERROR') {
+        console.error("Auth error:", session);
+        toast({
+          variant: "destructive",
+          title: "Authentication Error",
+          description: "There was an error during authentication. Please try again.",
+        });
+      }
     });
 
     checkUser();
