@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -6,26 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { Cult } from "@/types/cult";
-import { 
-  ArrowLeft, 
-  Users, 
-  Twitter, 
-  Settings, 
-  Globe, 
-  Lock,
-  UserPlus,
-  MessageSquare,
-  Activity,
-  Share2
-} from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { ArrowLeft, Twitter, Settings } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { QuickActions } from "@/components/dashboard/sections/QuickActions";
+import { ActivityFeed } from "@/components/dashboard/sections/ActivityFeed";
+import { CultStats } from "@/components/dashboard/sections/CultStats";
 
 const CultDashboard = () => {
   const { cultId } = useParams();
@@ -81,11 +66,8 @@ const CultDashboard = () => {
     );
   }
 
-  // Dynamic gradient based on cult's theme color
-  const gradientStyle = `from-cultDark to-[${cult.theme_color}]`;
-
   return (
-    <div className={`min-h-screen bg-gradient-to-br ${gradientStyle} p-4`}>
+    <div className="min-h-screen bg-gradient-to-br from-cultDark to-cultPurple p-4">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex justify-between items-center p-4 bg-cultDark/50 rounded-lg">
@@ -126,28 +108,8 @@ const CultDashboard = () => {
               <CardHeader>
                 <CardTitle className="text-cultWhite">Quick Actions</CardTitle>
               </CardHeader>
-              <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                <Button 
-                  variant="outline" 
-                  className="flex flex-col items-center gap-2 h-auto py-4 border-cultGlow text-cultWhite hover:bg-cultPurple/20"
-                >
-                  <UserPlus className="h-6 w-6" />
-                  <span>Invite Members</span>
-                </Button>
-                <Button 
-                  variant="outline"
-                  className="flex flex-col items-center gap-2 h-auto py-4 border-cultGlow text-cultWhite hover:bg-cultPurple/20"
-                >
-                  <MessageSquare className="h-6 w-6" />
-                  <span>Announcements</span>
-                </Button>
-                <Button 
-                  variant="outline"
-                  className="flex flex-col items-center gap-2 h-auto py-4 border-cultGlow text-cultWhite hover:bg-cultPurple/20"
-                >
-                  <Share2 className="h-6 w-6" />
-                  <span>Share Cult</span>
-                </Button>
+              <CardContent>
+                <QuickActions cultId={cult.id} cultName={cult.name} />
               </CardContent>
             </Card>
 
@@ -160,17 +122,7 @@ const CultDashboard = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <ScrollArea className="h-[300px] rounded-md border border-cultGlow/20 p-4">
-                  <div className="space-y-4">
-                    {/* Placeholder activities - will be replaced with real data */}
-                    <div className="flex items-center gap-4 text-cultWhite/80">
-                      <Activity className="h-4 w-4" />
-                      <span>New member joined the cult</span>
-                      <span className="text-sm text-cultWhite/60">2m ago</span>
-                    </div>
-                    {/* Add more activity items here */}
-                  </div>
-                </ScrollArea>
+                <ActivityFeed cultId={cult.id} />
               </CardContent>
             </Card>
           </div>
@@ -178,47 +130,7 @@ const CultDashboard = () => {
           {/* Sidebar Stats and Info */}
           <div className="space-y-6">
             {/* Cult Stats */}
-            <Card className="bg-cultDark/50 border-cultGlow">
-              <CardHeader>
-                <CardTitle className="text-cultWhite">Cult Stats</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex justify-between items-center text-cultWhite/80">
-                  <span className="flex items-center gap-2">
-                    <Users className="h-4 w-4" />
-                    Members
-                  </span>
-                  <span>{cult.linked_agents_count || 0}</span>
-                </div>
-                <div className="flex justify-between items-center text-cultWhite/80">
-                  <span className="flex items-center gap-2">
-                    <Globe className="h-4 w-4" />
-                    Visibility
-                  </span>
-                  <span className="flex items-center gap-1">
-                    {cult.visibility === 'public' ? (
-                      <>
-                        <Globe className="h-4 w-4" />
-                        Public
-                      </>
-                    ) : (
-                      <>
-                        <Lock className="h-4 w-4" />
-                        Private
-                      </>
-                    )}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center text-cultWhite/80">
-                  <span>Type</span>
-                  <span className={`px-2 py-1 rounded text-sm ${
-                    cult.cult_type === 'dev' ? 'bg-blue-500/20 text-blue-300' : 'bg-purple-500/20 text-purple-300'
-                  }`}>
-                    {cult.cult_type === 'dev' ? 'Developer' : 'AI Agent'}
-                  </span>
-                </div>
-              </CardContent>
-            </Card>
+            <CultStats cult={cult} />
 
             {/* Description */}
             <Card className="bg-cultDark/50 border-cultGlow">
