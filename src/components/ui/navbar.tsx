@@ -14,7 +14,7 @@ export const Navbar = () => {
     // Set up auth state change listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (event === 'SIGNED_OUT') {
-        navigate('/');
+        window.location.href = '/';
       }
     });
 
@@ -29,12 +29,16 @@ export const Navbar = () => {
     try {
       setIsSigningOut(true);
       
-      // Force remove the session without making a server call
-      await supabase.auth.signOut({ 
-        scope: 'local'
-      });
+      // First try to sign out from all devices
+      const { error } = await supabase.auth.signOut();
+      
+      if (error) {
+        console.error("Global sign out failed, trying local sign out:", error);
+        // If global sign out fails, try local sign out
+        await supabase.auth.signOut({ scope: 'local' });
+      }
 
-      // Navigate to root and force refresh
+      // Force a page refresh to clear all state
       window.location.href = '/';
       
       toast({
