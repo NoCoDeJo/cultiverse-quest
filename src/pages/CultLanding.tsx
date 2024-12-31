@@ -21,7 +21,7 @@ const CultLanding = () => {
       if (error) throw error;
       
       // Ensure landing_page_content has the correct structure
-      const landingContent = data.landing_page_content as LandingPageContent || { sections: [] };
+      const landingContent = (data.landing_page_content as any as LandingPageContent) || { sections: [] };
       return {
         ...data,
         landing_page_content: landingContent

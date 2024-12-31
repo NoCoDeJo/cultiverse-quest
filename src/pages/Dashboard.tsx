@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Cult } from "@/types/cult";
+import { LandingPageContent } from "@/types/landing";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
@@ -18,7 +19,7 @@ const Dashboard = () => {
       // Ensure each cult has the correct landing_page_content structure
       return (data || []).map(cult => ({
         ...cult,
-        landing_page_content: (cult.landing_page_content as LandingPageContent) || { sections: [] }
+        landing_page_content: (cult.landing_page_content as any as LandingPageContent) || { sections: [] }
       })) as Cult[];
     },
   });

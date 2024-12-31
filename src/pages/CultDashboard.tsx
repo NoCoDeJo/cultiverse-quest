@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { Cult } from "@/types/cult";
+import { LandingPageContent } from "@/types/landing";
 import { ArrowLeft, Twitter, Settings } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { QuickActions } from "@/components/dashboard/sections/QuickActions";
