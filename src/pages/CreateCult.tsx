@@ -75,13 +75,16 @@ const CreateCult = () => {
     setCurrentInput("");
 
     const updatedFormData = { ...formData };
+
     if (currentStep === 'type') {
-      // Validate cult type input
-      const cultType = currentInput.toLowerCase();
-      updatedFormData.cult_type = cultType === 'agent' ? 'agent' : 'dev';
-    } else {
-      updatedFormData[currentStep as keyof FormDataType] = currentInput;
+      // Validate and set cult type
+      const inputType = currentInput.toLowerCase();
+      updatedFormData.cult_type = inputType === 'agent' ? 'agent' : 'dev';
+    } else if (currentStep === 'name' || currentStep === 'description') {
+      // Only update name and description directly
+      updatedFormData[currentStep] = currentInput;
     }
+
     setFormData(updatedFormData);
 
     let nextStep: typeof currentStep = currentStep;
