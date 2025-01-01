@@ -13,6 +13,14 @@ type Message = {
   field?: string;
 };
 
+type FormDataType = {
+  name: string;
+  description: string;
+  twitter_handle: string;
+  cult_type: 'dev' | 'agent';
+  custom_url: string;
+};
+
 const CreateCult = () => {
   const navigate = useNavigate();
   const [messages, setMessages] = useState<Message[]>([
@@ -20,11 +28,11 @@ const CreateCult = () => {
   ]);
   const [currentInput, setCurrentInput] = useState("");
   const [currentStep, setCurrentStep] = useState<'name' | 'description' | 'twitter' | 'type' | 'url' | 'complete'>('name');
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormDataType>({
     name: '',
     description: '',
     twitter_handle: '',
-    cult_type: '',
+    cult_type: 'dev',
     custom_url: '',
   });
   const { generateCultInfo } = useAIAssistant();
@@ -72,8 +80,14 @@ const CreateCult = () => {
     setCurrentInput("");
 
     const updatedFormData = { ...formData };
-    updatedFormData[currentStep] = currentInput;
-    setFormData(updatedFormData);
+    if (currentStep === 'type') {
+      // Validate cult type input
+      const cultType = currentInput.toLowerCase();
+      updatedFormData.cult_type = cultType === 'agent' ? 'agent' : 'dev';
+    } else {
+      updatedFormData[currentStep] = currentInput;
+    }
+    setFormData(updatedFormData as FormDataType);
 
     let nextStep: typeof currentStep = currentStep;
     let systemMessage = '';
