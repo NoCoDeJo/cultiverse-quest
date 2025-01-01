@@ -74,52 +74,6 @@ export const FormFields = ({ form }: FormFieldsProps) => {
 
       <FormField
         control={form.control}
-        name="custom_url"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel className="text-cultWhite">Custom URL</FormLabel>
-            <FormControl>
-              <div className="flex">
-                <span className="flex items-center px-3 bg-cultPurple/50 border border-r-0 border-input rounded-l-md text-cultWhite">
-                  cult/
-                </span>
-                <Input 
-                  {...field}
-                  className="rounded-l-none"
-                  placeholder="your-cult-name"
-                />
-              </div>
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={form.control}
-        name="twitter_handle"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel className="text-cultWhite">Twitter Handle</FormLabel>
-            <FormControl>
-              <div className="flex">
-                <span className="flex items-center px-3 bg-cultPurple/50 border border-r-0 border-input rounded-l-md text-cultWhite">
-                  @
-                </span>
-                <Input 
-                  {...field}
-                  className="rounded-l-none"
-                  placeholder="elonmusk"
-                />
-              </div>
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={form.control}
         name="cult_type"
         render={({ field }) => (
           <FormItem>
