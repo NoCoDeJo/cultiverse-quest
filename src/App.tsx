@@ -11,6 +11,7 @@ import Landing from "./pages/Landing";
 import CultDashboard from "./pages/CultDashboard";
 import Join from "./pages/Join";
 import CultLanding from "./pages/CultLanding";
+import CreateCult from "./pages/CreateCult";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +29,7 @@ const App = () => {
               <Route path="/cult/:cultId" element={<CultDashboard />} />
               <Route path="/join/:code" element={<Join />} />
               <Route path="/c/:customUrl" element={<CultLanding />} />
+              <Route path="/create-cult" element={<CreateCult />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
             <Toaster />
