@@ -16,7 +16,6 @@ type Message = {
 type FormDataType = {
   name: string;
   description: string;
-  twitter_handle?: string;
   cult_type: 'dev' | 'agent';
   custom_url?: string;
 };
@@ -47,7 +46,7 @@ const CreateCult = () => {
     }
 
     setIsGenerating(true);
-    const cultInfo = await generateCultInfo();
+    const cultInfo = await generateCultInfo(formData.name);
     setIsGenerating(false);
 
     if (cultInfo) {
@@ -77,11 +76,9 @@ const CreateCult = () => {
     const updatedFormData = { ...formData };
 
     if (currentStep === 'type') {
-      // Validate and set cult type
       const inputType = currentInput.toLowerCase();
       updatedFormData.cult_type = inputType === 'agent' ? 'agent' : 'dev';
     } else if (currentStep === 'name' || currentStep === 'description') {
-      // Only update name and description directly
       updatedFormData[currentStep] = currentInput;
     }
 
