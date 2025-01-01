@@ -13,9 +13,9 @@ interface InputSectionProps {
   currentStep: Step;
   setCurrentStep: (step: Step) => void;
   messages: Message[];
-  setMessages: (messages: Message[]) => void;
+  setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
   formData: FormDataType;
-  setFormData: (data: FormDataType) => void;
+  setFormData: React.Dispatch<React.SetStateAction<FormDataType>>;
 }
 
 export const InputSection = ({
