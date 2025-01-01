@@ -13,6 +13,10 @@ import { Moon, Skull, Ghost, Sparkles } from "lucide-react";
 import { SearchAndFilters } from "@/components/dashboard/SearchAndFilters";
 import { DashboardHeader } from "@/components/dashboard/sections/DashboardHeader";
 import { DashboardTabs } from "@/components/dashboard/sections/DashboardTabs";
+import { ParticleSystem } from "@/components/effects/ParticleSystem";
+import { ErrorBoundary } from "@/components/error/ErrorBoundary";
+import { performanceMonitor } from "@/utils/performance";
+import { useEffect } from "react";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -21,20 +25,36 @@ const Dashboard = () => {
   const session = useSession();
   const currentUserId = session?.user?.id;
 
+  useEffect(() => {
+    performanceMonitor.start('dashboard-load');
+    performanceMonitor.logNavigationTiming();
+    
+    return () => {
+      performanceMonitor.end('dashboard-load');
+    };
+  }, []);
+
   const { data: cults, isLoading, refetch } = useQuery({
     queryKey: ['cults'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('cults')
-        .select('*')
-        .order('created_at', { ascending: false });
+      performanceMonitor.start('fetch-cults');
+      try {
+        const { data, error } = await supabase
+          .from('cults')
+          .select('*')
+          .order('created_at', { ascending: false });
 
-      if (error) throw error;
+        if (error) throw error;
 
-      return (data || []).map(cult => ({
-        ...cult,
-        landing_page_content: (cult.landing_page_content as any as LandingPageContent) || { sections: [] }
-      })) as Cult[];
+        const processedData = (data || []).map(cult => ({
+          ...cult,
+          landing_page_content: (cult.landing_page_content as any as LandingPageContent) || { sections: [] }
+        })) as Cult[];
+
+        return processedData;
+      } finally {
+        performanceMonitor.end('fetch-cults');
+      }
     },
   });
 
@@ -117,63 +137,63 @@ const Dashboard = () => {
   ];
 
   return (
-    <div 
-      className="min-h-screen bg-gradient-to-br from-cultDark to-cultPurple relative overflow-hidden"
-      role="main"
-      aria-label="Cult Dashboard"
-    >
-      {floatingIcons.map((Icon, index) => (
-        <motion.div
-          key={index}
-          className="absolute text-cultGlow/20"
-          initial={{ y: "100vh" }}
-          animate={{ 
-            y: ["100vh", "-100vh"],
-            x: [
-              `${Math.random() * 100}vw`,
-              `${Math.random() * 100}vw`
-            ]
-          }}
-          transition={{
-            duration: 15 + Math.random() * 10,
-            repeat: Infinity,
-            delay: Icon.delay,
-            ease: "linear"
-          }}
-          aria-hidden="true"
-        >
-          <Icon.icon className="w-12 h-12" aria-label={Icon.label} />
-        </motion.div>
-      ))}
-
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.1)_0%,rgba(0,0,0,0)_70%)]" aria-hidden="true" />
-      
-      <Navbar />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-12 relative z-10 space-y-8">
-        <DashboardHeader onTestAI={testAI} onCultCreated={refetch} />
+    <ErrorBoundary>
+      <div className="min-h-screen bg-gradient-to-br from-cultDark to-cultPurple relative overflow-hidden">
+        <ParticleSystem />
         
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="space-y-6"
-        >
-          <SearchAndFilters
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
-            cultType={cultType}
-            onTypeChange={(value) => setCultType(value as 'all' | 'dev' | 'agent')}
-          />
-        </motion.div>
+        {floatingIcons.map((Icon, index) => (
+          <motion.div
+            key={index}
+            className="absolute text-cultGlow/20"
+            initial={{ y: "100vh" }}
+            animate={{ 
+              y: ["100vh", "-100vh"],
+              x: [
+                `${Math.random() * 100}vw`,
+                `${Math.random() * 100}vw`
+              ]
+            }}
+            transition={{
+              duration: 15 + Math.random() * 10,
+              repeat: Infinity,
+              delay: Icon.delay,
+              ease: "linear"
+            }}
+            aria-hidden="true"
+          >
+            <Icon.icon className="w-12 h-12" aria-label={Icon.label} />
+          </motion.div>
+        ))}
 
-        <DashboardTabs 
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-          filteredCults={filteredCults}
-          onJoinCult={handleJoinCult}
-        />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.1)_0%,rgba(0,0,0,0)_70%)]" aria-hidden="true" />
+        
+        <Navbar />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-12 relative z-10 space-y-8">
+          <DashboardHeader onTestAI={testAI} onCultCreated={refetch} />
+          
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="space-y-6"
+          >
+            <SearchAndFilters
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+              cultType={cultType}
+              onTypeChange={(value) => setCultType(value as 'all' | 'dev' | 'agent')}
+            />
+          </motion.div>
+
+          <DashboardTabs 
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            filteredCults={filteredCults}
+            onJoinCult={handleJoinCult}
+          />
+        </div>
       </div>
-    </div>
+    </ErrorBoundary>
   );
 };
 
