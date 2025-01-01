@@ -33,9 +33,22 @@
   * {
     @apply border-border;
   }
+  
+  /* Improved focus styles for accessibility */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-cultGlow ring-offset-2 ring-offset-cultDark;
+  }
+  
+  /* Skip to main content link for keyboard users */
+  .skip-to-content {
+    @apply sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 
+           focus:px-4 focus:py-2 focus:bg-cultGlow focus:text-cultWhite focus:rounded;
+  }
+  
   body {
     @apply bg-cultDark text-cultWhite font-inter antialiased;
   }
+  
   h1, h2, h3, h4, h5, h6 {
     @apply font-cinzel;
   }
@@ -53,7 +66,9 @@
   }
 
   .shimmer {
-    @apply relative overflow-hidden before:absolute before:inset-0 before:-translate-x-full before:animate-shimmer before:bg-gradient-to-r before:from-transparent before:via-white/10 before:to-transparent;
+    @apply relative overflow-hidden before:absolute before:inset-0 before:-translate-x-full 
+           before:animate-shimmer before:bg-gradient-to-r before:from-transparent 
+           before:via-white/10 before:to-transparent;
   }
 
   .hover-glow {
@@ -77,7 +92,8 @@
   }
 
   .sacred-scroll {
-    @apply scrollbar-thin scrollbar-track-cultDark scrollbar-thumb-cultGlow/50 hover:scrollbar-thumb-cultGlow;
+    @apply scrollbar-thin scrollbar-track-cultDark scrollbar-thumb-cultGlow/50 
+           hover:scrollbar-thumb-cultGlow;
   }
 
   .mystical-backdrop {
@@ -89,9 +105,9 @@
   }
 }
 
-/* Custom scrollbar */
+/* Improved custom scrollbar for better accessibility */
 ::-webkit-scrollbar {
-  width: 8px;
+  @apply w-2;
 }
 
 ::-webkit-scrollbar-track {
@@ -121,23 +137,27 @@
 
 /* Smooth page transitions */
 .page-transition-enter {
-  opacity: 0;
-  transform: translateY(10px);
+  @apply opacity-0 translate-y-2;
 }
 
 .page-transition-enter-active {
-  opacity: 1;
-  transform: translateY(0);
-  transition: opacity 300ms, transform 300ms;
+  @apply opacity-100 translate-y-0 transition-all duration-300 ease-out;
 }
 
 .page-transition-exit {
-  opacity: 1;
-  transform: translateY(0);
+  @apply opacity-100 translate-y-0;
 }
 
 .page-transition-exit-active {
-  opacity: 0;
-  transform: translateY(-10px);
-  transition: opacity 300ms, transform 300ms;
+  @apply opacity-0 -translate-y-2 transition-all duration-300 ease-in;
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

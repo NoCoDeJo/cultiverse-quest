@@ -56,10 +56,13 @@ const CultCard = ({ cult, onJoin }: CultCardProps) => {
     <motion.div
       whileHover={{ scale: 1.02 }}
       transition={{ duration: 0.2 }}
+      role="article"
+      aria-label={`${cult.name} cult card`}
     >
       <Card 
         className="bg-cultDark/80 border-cultGlow hover:glow-border transition-all duration-300 overflow-hidden group"
         style={{ borderColor: cult.theme_color }}
+        tabIndex={0}
       >
         {cult.banner_url && (
           <div className="h-32 w-full overflow-hidden">
@@ -71,8 +74,8 @@ const CultCard = ({ cult, onJoin }: CultCardProps) => {
           </div>
         )}
         <CultCardHeader cult={cult} />
-        <CardContent>
-          <p className="text-cultWhite/80 mb-4 line-clamp-2 group-hover:line-clamp-none transition-all duration-300">
+        <CardContent className="space-y-6">
+          <p className="text-cultWhite/80 line-clamp-2 group-hover:line-clamp-none transition-all duration-300">
             {cult.description}
           </p>
           <CultCardBadges 
@@ -81,7 +84,7 @@ const CultCard = ({ cult, onJoin }: CultCardProps) => {
             isFounder={isFounder}
             isMember={isMember}
           />
-          <div className="flex gap-2">
+          <div className="flex gap-4">
             <CultCardActions 
               cultId={cult.id}
               isFounder={isFounder}
