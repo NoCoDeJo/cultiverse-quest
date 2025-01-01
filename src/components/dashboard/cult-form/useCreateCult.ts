@@ -12,7 +12,6 @@ export const useCreateCult = (onSuccess: () => void) => {
       name: "",
       description: "",
       theme_color: "#2D1B69",
-      twitter_handle: "",
       cult_type: "dev",
       custom_url: "",
     },
@@ -28,9 +27,6 @@ export const useCreateCult = (onSuccess: () => void) => {
       };
 
       // Only add optional fields if they have values
-      if (values.twitter_handle) {
-        cultData.twitter_handle = values.twitter_handle;
-      }
       if (values.custom_url) {
         cultData.custom_url = values.custom_url;
       }

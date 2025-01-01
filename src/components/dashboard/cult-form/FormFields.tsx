@@ -21,7 +21,6 @@ const formSchema = z.object({
   theme_color: z.string().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, {
     message: "Please enter a valid hex color code.",
   }),
-  twitter_handle: z.string().optional(),
   cult_type: z.enum(["dev", "agent"], {
     required_error: "Please select a cult type.",
   }),
