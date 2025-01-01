@@ -10,7 +10,10 @@ export const useAI = () => {
         body: { prompt },
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('AI generation error:', error);
+        throw error;
+      }
 
       return data.generatedText;
     } catch (error) {

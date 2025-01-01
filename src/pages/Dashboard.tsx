@@ -91,6 +91,7 @@ const Dashboard = () => {
 
   const testAI = async () => {
     try {
+      // Ensure we're using the correct URL format for the AI test
       const response = await generateWithAI("Hello! Please confirm if you're working properly by responding with a short greeting.");
       if (response) {
         toast({
@@ -98,7 +99,7 @@ const Dashboard = () => {
           description: response,
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('AI test error:', error);
       toast({
         title: "Error",
