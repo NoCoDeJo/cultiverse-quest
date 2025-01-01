@@ -5,48 +5,28 @@ import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
 
 const AuthPage = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
 
   useEffect(() => {
     const checkUser = async () => {
-      const { data: { session }, error } = await supabase.auth.getSession();
-      if (error) {
-        console.error("Error checking auth status:", error);
-        toast({
-          variant: "destructive",
-          title: "Authentication Error",
-          description: error.message,
-        });
-        return;
-      }
+      const { data: { session } } = await supabase.auth.getSession();
       if (session) {
         navigate("/dashboard");
       }
     };
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    checkUser();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session) {
-        toast({
-          title: "Welcome!",
-          description: "You have successfully signed in.",
-        });
         navigate("/dashboard");
-      } else if (event === 'SIGNED_OUT') {
-        toast({
-          title: "Signed out",
-          description: "You have been signed out.",
-        });
-        navigate("/");
       }
     });
 
-    checkUser();
     return () => subscription.unsubscribe();
-  }, [navigate, toast]);
+  }, [navigate]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 to-black p-4">
@@ -74,33 +54,10 @@ const AuthPage = () => {
                   brandAccent: '#7c3aed',
                 }
               }
-            },
-            style: {
-              button: {
-                background: '#2D1B69',
-                borderColor: '#8A4FFF',
-                color: 'white',
-              },
-              anchor: {
-                color: '#8A4FFF',
-              },
-              container: {
-                color: 'white',
-              },
-              divider: {
-                background: 'rgba(255, 255, 255, 0.1)',
-              },
-              label: {
-                color: 'white',
-              },
-              input: {
-                backgroundColor: 'rgba(45, 27, 105, 0.3)',
-                borderColor: '#8A4FFF',
-                color: 'white',
-              },
-            },
+            }
           }}
           providers={[]}
+          redirectTo={`${window.location.origin}/landing`}
         />
       </div>
     </div>

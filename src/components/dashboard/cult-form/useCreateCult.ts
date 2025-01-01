@@ -3,12 +3,9 @@ import { useForm } from "react-hook-form";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { formSchema, FormValues } from "./FormFields";
-import { useState } from "react";
 
 export const useCreateCult = (onSuccess: () => void) => {
   const { toast } = useToast();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -23,7 +20,6 @@ export const useCreateCult = (onSuccess: () => void) => {
 
   const onSubmit = async (values: FormValues) => {
     try {
-      setIsSubmitting(true);
       const { error } = await supabase.from("cults").insert({
         name: values.name,
         description: values.description,
@@ -48,10 +44,8 @@ export const useCreateCult = (onSuccess: () => void) => {
         description: "Failed to create cult. Please try again.",
         variant: "destructive",
       });
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
-  return { form, onSubmit, isSubmitting };
+  return { form, onSubmit };
 };

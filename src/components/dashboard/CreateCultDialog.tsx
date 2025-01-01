@@ -28,9 +28,7 @@ const CreateCultDialog = ({ onCultCreated }: CreateCultDialogProps) => {
       </DialogTrigger>
       <DialogContent className="bg-cultDark border-cultGlow">
         <DialogHeader>
-          <DialogTitle className="text-cultWhite font-serif text-xl">
-            The Overseer Awaits
-          </DialogTitle>
+          <DialogTitle className="text-cultWhite">Found New Cult</DialogTitle>
         </DialogHeader>
         <CreateCultForm onSuccess={handleSuccess} />
       </DialogContent>
