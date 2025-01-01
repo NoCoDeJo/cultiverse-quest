@@ -6,14 +6,52 @@ import { useAI } from "@/hooks/useAI";
 import { DashboardHeader } from "@/components/dashboard/sections/DashboardHeader";
 import { ErrorBoundary } from "@/components/error/ErrorBoundary";
 import { performanceMonitor } from "@/utils/performance";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import DashboardContent from "@/components/dashboard/sections/DashboardContent";
 import { useToast } from "@/hooks/use-toast";
-import { Json } from "@/integrations/supabase/types";
+import { useNavigate } from "react-router-dom";
+import { useSession } from "@supabase/auth-helpers-react";
 
 const Dashboard = () => {
   const { generateWithAI } = useAI();
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const session = useSession();
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) throw error;
+        
+        if (!session) {
+          console.log("User is not authenticated, redirecting to auth");
+          navigate('/auth');
+        }
+      } catch (error) {
+        console.error("Auth error:", error);
+        toast({
+          title: "Error",
+          description: "Failed to check authentication status",
+          variant: "destructive",
+        });
+        navigate('/auth');
+      } finally {
+        setIsCheckingAuth(false);
+      }
+    };
+    
+    checkAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session) {
+        navigate('/auth');
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate, toast]);
 
   useEffect(() => {
     performanceMonitor.start('dashboard-load');
@@ -48,6 +86,7 @@ const Dashboard = () => {
         performanceMonitor.end('fetch-cults');
       }
     },
+    enabled: !isCheckingAuth && !!session,
   });
 
   const testAI = async () => {
@@ -68,6 +107,16 @@ const Dashboard = () => {
       });
     }
   };
+
+  if (isCheckingAuth) {
+    return (
+      <div className="min-h-screen bg-cultDark flex items-center justify-center">
+        <div className="text-cultWhite text-xl animate-pulse">
+          Verifying access...
+        </div>
+      </div>
+    );
+  }
 
   return (
     <ErrorBoundary>
