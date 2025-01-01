@@ -16,9 +16,9 @@ type Message = {
 type FormDataType = {
   name: string;
   description: string;
-  twitter_handle: string;
+  twitter_handle?: string;
   cult_type: 'dev' | 'agent';
-  custom_url: string;
+  custom_url?: string;
 };
 
 const CreateCult = () => {
@@ -27,13 +27,11 @@ const CreateCult = () => {
     { type: 'system', content: "Welcome! Let's create your cult together. What would you like to name your cult?" }
   ]);
   const [currentInput, setCurrentInput] = useState("");
-  const [currentStep, setCurrentStep] = useState<'name' | 'description' | 'twitter' | 'type' | 'url' | 'complete'>('name');
+  const [currentStep, setCurrentStep] = useState<'name' | 'description' | 'type' | 'complete'>('name');
   const [formData, setFormData] = useState<FormDataType>({
     name: '',
     description: '',
-    twitter_handle: '',
     cult_type: 'dev',
-    custom_url: '',
   });
   const { generateCultInfo } = useAIAssistant();
   const { form, onSubmit } = useCreateCult(() => navigate('/dashboard'));
@@ -55,15 +53,12 @@ const CreateCult = () => {
     if (cultInfo) {
       form.setValue("name", formData.name);
       form.setValue("description", cultInfo.description);
-      form.setValue("twitter_handle", cultInfo.twitter_handle);
       form.setValue("theme_color", cultInfo.theme_color);
       await onSubmit({
         name: formData.name,
         description: cultInfo.description,
-        twitter_handle: cultInfo.twitter_handle,
         theme_color: cultInfo.theme_color,
         cult_type: 'dev',
-        custom_url: '',
       });
     }
   };
@@ -85,9 +80,9 @@ const CreateCult = () => {
       const cultType = currentInput.toLowerCase();
       updatedFormData.cult_type = cultType === 'agent' ? 'agent' : 'dev';
     } else {
-      updatedFormData[currentStep] = currentInput;
+      updatedFormData[currentStep as keyof FormDataType] = currentInput;
     }
-    setFormData(updatedFormData as FormDataType);
+    setFormData(updatedFormData);
 
     let nextStep: typeof currentStep = currentStep;
     let systemMessage = '';
@@ -98,18 +93,10 @@ const CreateCult = () => {
         systemMessage = "Great name! Now, describe your cult's purpose and vision.";
         break;
       case 'description':
-        nextStep = 'twitter';
-        systemMessage = "Excellent! What's your cult's Twitter handle? (without the @ symbol)";
-        break;
-      case 'twitter':
         nextStep = 'type';
         systemMessage = "Choose your cult type: 'dev' for developers or 'agent' for AI agents.";
         break;
       case 'type':
-        nextStep = 'url';
-        systemMessage = "Finally, choose a custom URL for your cult (optional).";
-        break;
-      case 'url':
         nextStep = 'complete';
         await onSubmit({
           ...updatedFormData,

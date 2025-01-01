@@ -20,14 +20,22 @@ export const useCreateCult = (onSuccess: () => void) => {
 
   const onSubmit = async (values: FormValues) => {
     try {
-      const { error } = await supabase.from("cults").insert({
+      const cultData: any = {
         name: values.name,
         description: values.description,
         theme_color: values.theme_color,
-        twitter_handle: values.twitter_handle,
         cult_type: values.cult_type,
-        custom_url: values.custom_url || null,
-      });
+      };
+
+      // Only add optional fields if they have values
+      if (values.twitter_handle) {
+        cultData.twitter_handle = values.twitter_handle;
+      }
+      if (values.custom_url) {
+        cultData.custom_url = values.custom_url;
+      }
+
+      const { error } = await supabase.from("cults").insert(cultData);
 
       if (error) throw error;
 

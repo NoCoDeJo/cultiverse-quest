@@ -21,17 +21,11 @@ const formSchema = z.object({
   theme_color: z.string().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, {
     message: "Please enter a valid hex color code.",
   }),
-  twitter_handle: z.string().min(1, {
-    message: "Twitter handle is required.",
-  }).refine(handle => !handle.includes('@'), {
-    message: "Please enter the handle without the @ symbol.",
-  }),
+  twitter_handle: z.string().optional(),
   cult_type: z.enum(["dev", "agent"], {
     required_error: "Please select a cult type.",
   }),
   custom_url: z.string()
-    .min(3, { message: "Custom URL must be at least 3 characters." })
-    .max(30, { message: "Custom URL cannot exceed 30 characters." })
     .regex(/^[a-z0-9-]+$/, {
       message: "Custom URL can only contain lowercase letters, numbers, and hyphens.",
     })
