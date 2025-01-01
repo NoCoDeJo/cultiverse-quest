@@ -3,9 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAIAssistant } from "@/hooks/useAIAssistant";
-import { useCreateCult } from "@/components/dashboard/cult-form/useCreateCult";
 import { Wand2, ArrowRight, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
 
 type Message = {
   type: 'system' | 'user' | 'assistant';
@@ -22,6 +22,7 @@ type FormDataType = {
 
 const CreateCult = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [messages, setMessages] = useState<Message[]>([
     { type: 'system', content: "Welcome! Let's create your cult together. What would you like to name your cult?" }
   ]);
@@ -33,33 +34,47 @@ const CreateCult = () => {
     cult_type: 'dev',
   });
   const { generateCultInfo } = useAIAssistant();
-  const { form, onSubmit } = useCreateCult(() => navigate('/dashboard'));
   const [isGenerating, setIsGenerating] = useState(false);
   const [showAIButton, setShowAIButton] = useState(false);
 
   const handleGenerateWithAI = async () => {
     if (!formData.name) {
-      setMessages(prev => [...prev, { 
-        type: 'system', 
-        content: "Please enter a cult name first before generating with AI." 
-      }]);
+      toast({
+        title: "Error",
+        description: "Please enter a cult name first.",
+        variant: "destructive"
+      });
       return;
     }
 
     setIsGenerating(true);
-    const cultInfo = await generateCultInfo(formData.name);
-    setIsGenerating(false);
-
-    if (cultInfo) {
-      form.setValue("name", formData.name);
-      form.setValue("description", cultInfo.description);
-      form.setValue("theme_color", cultInfo.theme_color);
-      await onSubmit({
-        name: formData.name,
-        description: cultInfo.description,
-        theme_color: cultInfo.theme_color,
-        cult_type: cultInfo.cult_type || 'dev',
+    try {
+      const cultInfo = await generateCultInfo(formData.name);
+      if (cultInfo) {
+        setFormData(prev => ({
+          ...prev,
+          description: cultInfo.description,
+          cult_type: cultInfo.cult_type || 'dev'
+        }));
+        
+        setMessages(prev => [
+          ...prev,
+          { type: 'assistant', content: "I've generated some details for your cult:" },
+          { type: 'assistant', content: `Description: ${cultInfo.description}` },
+          { type: 'assistant', content: `Type: ${cultInfo.cult_type}` },
+          { type: 'system', content: "You can continue with these details or modify them as you wish." }
+        ]);
+        
+        setCurrentStep('type');
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to generate cult details. Please try again.",
+        variant: "destructive"
       });
+    } finally {
+      setIsGenerating(false);
     }
   };
 
@@ -78,10 +93,9 @@ const CreateCult = () => {
 
     if (currentStep === 'name') {
       updatedFormData.name = currentInput;
-      setShowAIButton(true); // Show AI button after name is entered
+      setShowAIButton(true);
     } else if (currentStep === 'type') {
-      const inputType = currentInput.toLowerCase();
-      updatedFormData.cult_type = inputType === 'agent' ? 'agent' : 'dev';
+      updatedFormData.cult_type = currentInput.toLowerCase() === 'agent' ? 'agent' : 'dev';
     } else if (currentStep === 'description') {
       updatedFormData.description = currentInput;
     }
@@ -102,11 +116,22 @@ const CreateCult = () => {
         break;
       case 'type':
         nextStep = 'complete';
-        await onSubmit({
-          ...updatedFormData,
-          theme_color: '#2D1B69',
-        });
-        systemMessage = "Perfect! Your cult has been created. Redirecting to dashboard...";
+        try {
+          const { error } = await supabase.from('cults').insert([{
+            name: updatedFormData.name,
+            description: updatedFormData.description,
+            cult_type: updatedFormData.cult_type,
+            theme_color: '#2D1B69'
+          }]);
+          
+          if (error) throw error;
+          
+          systemMessage = "Perfect! Your cult has been created. Redirecting to dashboard...";
+          setTimeout(() => navigate('/dashboard'), 2000);
+        } catch (error) {
+          systemMessage = "There was an error creating your cult. Please try again.";
+          console.error('Error creating cult:', error);
+        }
         break;
     }
 
@@ -116,7 +141,7 @@ const CreateCult = () => {
     setCurrentStep(nextStep);
     
     if (nextStep !== 'name') {
-      setShowAIButton(false); // Hide AI button after moving past name step
+      setShowAIButton(false);
     }
   };
 
