@@ -7,6 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { motion } from "framer-motion";
 
 interface SearchAndFiltersProps {
   searchQuery: string;
@@ -23,25 +24,36 @@ export const SearchAndFilters = ({
 }: SearchAndFiltersProps) => {
   return (
     <div className="flex flex-col md:flex-row gap-4">
-      <div className="relative flex-1">
+      <motion.div 
+        className="relative flex-1"
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.3 }}
+      >
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-cultWhite/60" />
         <Input
-          placeholder="Search cults..."
-          className="pl-10 bg-cultDark/50 border-cultGlow text-cultWhite placeholder:text-cultWhite/60"
+          placeholder="Search mystical cults..."
+          className="pl-10 bg-cultDark/50 border-cultGlow text-cultWhite placeholder:text-cultWhite/60 focus:ring-cultGlow/50 focus:border-cultGlow transition-all duration-300"
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
         />
-      </div>
-      <Select value={cultType} onValueChange={onTypeChange}>
-        <SelectTrigger className="w-[180px] border-cultGlow text-cultWhite bg-cultDark/50">
-          <SelectValue placeholder="Type" />
-        </SelectTrigger>
-        <SelectContent className="bg-cultDark border-cultGlow">
-          <SelectItem value="all">All Types</SelectItem>
-          <SelectItem value="dev">Developer</SelectItem>
-          <SelectItem value="agent">AI Agent</SelectItem>
-        </SelectContent>
-      </Select>
+      </motion.div>
+      <motion.div
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.3, delay: 0.1 }}
+      >
+        <Select value={cultType} onValueChange={onTypeChange}>
+          <SelectTrigger className="w-[180px] border-cultGlow text-cultWhite bg-cultDark/50 focus:ring-cultGlow/50 hover:bg-cultPurple/20 transition-all duration-300">
+            <SelectValue placeholder="Type" />
+          </SelectTrigger>
+          <SelectContent className="bg-cultDark border-cultGlow">
+            <SelectItem value="all" className="text-cultWhite hover:bg-cultPurple/20">All Types</SelectItem>
+            <SelectItem value="dev" className="text-cultWhite hover:bg-cultPurple/20">Developer</SelectItem>
+            <SelectItem value="agent" className="text-cultWhite hover:bg-cultPurple/20">AI Agent</SelectItem>
+          </SelectContent>
+        </Select>
+      </motion.div>
     </div>
   );
 };
