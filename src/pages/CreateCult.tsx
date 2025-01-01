@@ -35,6 +35,7 @@ const CreateCult = () => {
   const { generateCultInfo } = useAIAssistant();
   const { form, onSubmit } = useCreateCult(() => navigate('/dashboard'));
   const [isGenerating, setIsGenerating] = useState(false);
+  const [showAIButton, setShowAIButton] = useState(false);
 
   const handleGenerateWithAI = async () => {
     if (!formData.name) {
@@ -57,7 +58,7 @@ const CreateCult = () => {
         name: formData.name,
         description: cultInfo.description,
         theme_color: cultInfo.theme_color,
-        cult_type: 'dev',
+        cult_type: cultInfo.cult_type || 'dev',
       });
     }
   };
@@ -75,11 +76,14 @@ const CreateCult = () => {
 
     const updatedFormData = { ...formData };
 
-    if (currentStep === 'type') {
+    if (currentStep === 'name') {
+      updatedFormData.name = currentInput;
+      setShowAIButton(true); // Show AI button after name is entered
+    } else if (currentStep === 'type') {
       const inputType = currentInput.toLowerCase();
       updatedFormData.cult_type = inputType === 'agent' ? 'agent' : 'dev';
-    } else if (currentStep === 'name' || currentStep === 'description') {
-      updatedFormData[currentStep] = currentInput;
+    } else if (currentStep === 'description') {
+      updatedFormData.description = currentInput;
     }
 
     setFormData(updatedFormData);
@@ -110,6 +114,10 @@ const CreateCult = () => {
       setMessages([...newMessages, { type: 'system', content: systemMessage }]);
     }
     setCurrentStep(nextStep);
+    
+    if (nextStep !== 'name') {
+      setShowAIButton(false); // Hide AI button after moving past name step
+    }
   };
 
   return (
@@ -133,31 +141,39 @@ const CreateCult = () => {
 
         {currentStep !== 'complete' && (
           <div className="fixed bottom-0 left-0 right-0 p-4 bg-cultDark border-t border-cultGlow">
-            <div className="max-w-2xl mx-auto flex gap-2">
-              <Input
-                value={currentInput}
-                onChange={(e) => setCurrentInput(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleSubmit()}
-                placeholder="Type your response..."
-                className="flex-1"
-              />
-              <Button onClick={handleSubmit}>
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-              {currentStep === 'name' && (
+            <div className="max-w-2xl mx-auto space-y-2">
+              {showAIButton && (
                 <Button 
                   onClick={handleGenerateWithAI}
-                  disabled={isGenerating || !currentInput}
+                  disabled={isGenerating}
                   variant="outline"
-                  className="border-cultGlow"
+                  className="w-full border-cultGlow text-cultWhite hover:bg-cultPurple/20"
                 >
                   {isGenerating ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Generating cult details...
+                    </>
                   ) : (
-                    <Wand2 className="h-4 w-4" />
+                    <>
+                      <Wand2 className="mr-2 h-4 w-4" />
+                      Generate remaining details with AI
+                    </>
                   )}
                 </Button>
               )}
+              <div className="flex gap-2">
+                <Input
+                  value={currentInput}
+                  onChange={(e) => setCurrentInput(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleSubmit()}
+                  placeholder="Type your response..."
+                  className="flex-1"
+                />
+                <Button onClick={handleSubmit}>
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
           </div>
         )}
