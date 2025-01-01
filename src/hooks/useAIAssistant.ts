@@ -5,14 +5,13 @@ export const useAIAssistant = () => {
   const { generateWithAI } = useAI();
   const { toast } = useToast();
 
-  const generateCultInfo = async () => {
+  const generateCultInfo = async (cultName: string) => {
     try {
-      const prompt = `Generate a creative cult concept including:
-      - A unique and memorable cult name
+      const prompt = `Generate creative details for a cult named "${cultName}". Include:
       - A compelling description (2-3 sentences)
       - A theme color (hex code)
-      - A Twitter handle (without @ symbol)
-      Format as JSON with keys: name, description, theme_color, twitter_handle`;
+      - A cult type (either "dev" for developer or "agent" for AI agent)
+      Format as JSON with keys: description, theme_color, cult_type`;
 
       const response = await generateWithAI(prompt);
       if (!response) throw new Error("No response from AI");

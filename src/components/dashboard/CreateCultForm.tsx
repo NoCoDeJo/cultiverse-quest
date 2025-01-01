@@ -14,21 +14,19 @@ const CreateCultForm = ({ onSuccess }: CreateCultFormProps) => {
   const { generateCultInfo } = useAIAssistant();
 
   const handleGenerateInfo = async () => {
-    const cultInfo = await generateCultInfo();
+    const cultName = form.getValues("name");
+    const cultInfo = await generateCultInfo(cultName);
     if (cultInfo) {
-      form.setValue("name", cultInfo.name);
       form.setValue("description", cultInfo.description);
       form.setValue("theme_color", cultInfo.theme_color);
+      form.setValue("cult_type", cultInfo.cult_type || "dev");
     }
   };
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <div className="flex justify-end">
-          <GenerateWithAIButton onClick={handleGenerateInfo} />
-        </div>
-        <FormFields form={form} />
+        <FormFields form={form} onNameEntered={handleGenerateInfo} />
         <Button type="submit" className="w-full bg-cultGlow hover:bg-cultGlow/80">
           Create Cult
         </Button>

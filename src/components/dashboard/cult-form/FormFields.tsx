@@ -10,6 +10,9 @@ import {
 } from "@/components/ui/select";
 import { UseFormReturn } from "react-hook-form";
 import * as z from "zod";
+import { Wand2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -35,9 +38,26 @@ export type FormValues = z.infer<typeof formSchema>;
 
 interface FormFieldsProps {
   form: UseFormReturn<FormValues>;
+  onNameEntered?: () => void;
 }
 
-export const FormFields = ({ form }: FormFieldsProps) => {
+export const FormFields = ({ form, onNameEntered }: FormFieldsProps) => {
+  const [showGenerateButton, setShowGenerateButton] = useState(false);
+  const [hasGenerated, setHasGenerated] = useState(false);
+
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    form.setValue("name", value);
+    setShowGenerateButton(value.length >= 2);
+  };
+
+  const handleGenerateClick = async () => {
+    if (onNameEntered) {
+      await onNameEntered();
+      setHasGenerated(true);
+    }
+  };
+
   return (
     <>
       <FormField
@@ -47,9 +67,24 @@ export const FormFields = ({ form }: FormFieldsProps) => {
           <FormItem>
             <FormLabel className="text-cultWhite">Name</FormLabel>
             <FormControl>
-              <Input placeholder="Enter cult name..." {...field} />
+              <Input 
+                placeholder="Enter cult name..." 
+                {...field} 
+                onChange={handleNameChange}
+              />
             </FormControl>
             <FormMessage />
+            {showGenerateButton && !hasGenerated && (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleGenerateClick}
+                className="mt-2 w-full border-cultGlow text-cultWhite hover:bg-cultPurple/20"
+              >
+                <Wand2 className="mr-2 h-4 w-4" />
+                Generate details with AI based on name
+              </Button>
+            )}
           </FormItem>
         )}
       />
