@@ -3,9 +3,12 @@ import { useForm } from "react-hook-form";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { formSchema, FormValues } from "./FormFields";
+import { useSession } from "@supabase/auth-helpers-react";
 
 export const useCreateCult = (onSuccess: () => void) => {
   const { toast } = useToast();
+  const session = useSession();
+  
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -19,17 +22,18 @@ export const useCreateCult = (onSuccess: () => void) => {
 
   const onSubmit = async (values: FormValues) => {
     try {
-      const cultData: any = {
+      if (!session?.user?.id) {
+        throw new Error("User must be logged in to create a cult");
+      }
+
+      const cultData = {
         name: values.name,
         description: values.description,
         theme_color: values.theme_color,
         cult_type: values.cult_type,
+        founder_id: session.user.id,
+        custom_url: values.custom_url || undefined,
       };
-
-      // Only add optional fields if they have values
-      if (values.custom_url) {
-        cultData.custom_url = values.custom_url;
-      }
 
       const { error } = await supabase.from("cults").insert(cultData);
 
