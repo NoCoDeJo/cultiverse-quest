@@ -34,19 +34,110 @@
     @apply border-border;
   }
   body {
-    @apply bg-cultDark text-cultWhite font-inter;
+    @apply bg-cultDark text-cultWhite font-inter antialiased;
   }
   h1, h2, h3, h4, h5, h6 {
     @apply font-cinzel;
   }
 }
 
-.glow-border {
-  box-shadow: 0 0 10px theme('colors.cultGlow');
+@layer components {
+  .glow-border {
+    box-shadow: 0 0 10px theme('colors.cultGlow');
+  }
+  
+  .sacred-pattern {
+    background-image: radial-gradient(circle at center, theme('colors.cultGlow') 1px, transparent 1px);
+    background-size: 30px 30px;
+    opacity: 0.1;
+  }
+
+  .shimmer {
+    @apply relative overflow-hidden before:absolute before:inset-0 before:-translate-x-full before:animate-shimmer before:bg-gradient-to-r before:from-transparent before:via-white/10 before:to-transparent;
+  }
+
+  .hover-glow {
+    @apply transition-all duration-300 hover:glow-border hover:scale-105;
+  }
+
+  .mystical-gradient {
+    @apply bg-gradient-to-br from-cultPurple to-cultGlow;
+  }
+
+  .card-hover {
+    @apply transition-all duration-300 hover:translate-y-[-4px] hover:shadow-lg;
+  }
+
+  .input-glow {
+    @apply focus:ring-2 focus:ring-cultGlow/50 focus:border-cultGlow transition-all duration-300;
+  }
+
+  .button-glow {
+    @apply hover:glow-border hover:scale-105 active:scale-95 transition-all duration-300;
+  }
+
+  .sacred-scroll {
+    @apply scrollbar-thin scrollbar-track-cultDark scrollbar-thumb-cultGlow/50 hover:scrollbar-thumb-cultGlow;
+  }
+
+  .mystical-backdrop {
+    @apply bg-gradient-to-br from-cultDark to-cultPurple relative overflow-hidden;
+  }
+
+  .floating-icons > * {
+    @apply absolute text-cultGlow/20 animate-float;
+  }
 }
 
-.sacred-pattern {
-  background-image: radial-gradient(circle at center, theme('colors.cultGlow') 1px, transparent 1px);
-  background-size: 30px 30px;
-  opacity: 0.1;
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-cultDark;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-cultGlow/50 rounded-full transition-colors duration-300;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-cultGlow;
+}
+
+/* Loading animation */
+.loading-dots::after {
+  content: '...';
+  animation: dots 1.5s steps(5, end) infinite;
+}
+
+@keyframes dots {
+  0%, 20% { content: '.'; }
+  40% { content: '..'; }
+  60% { content: '...'; }
+  80%, 100% { content: ''; }
+}
+
+/* Smooth page transitions */
+.page-transition-enter {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.page-transition-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 300ms, transform 300ms;
+}
+
+.page-transition-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.page-transition-exit-active {
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 300ms, transform 300ms;
 }
