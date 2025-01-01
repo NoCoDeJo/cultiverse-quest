@@ -19,7 +19,6 @@ const CreateCultForm = ({ onSuccess }: CreateCultFormProps) => {
       form.setValue("name", cultInfo.name);
       form.setValue("description", cultInfo.description);
       form.setValue("theme_color", cultInfo.theme_color);
-      form.setValue("twitter_handle", cultInfo.twitter_handle);
     }
   };
 
