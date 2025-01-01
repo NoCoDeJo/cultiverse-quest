@@ -8,9 +8,12 @@ import { ErrorBoundary } from "@/components/error/ErrorBoundary";
 import { performanceMonitor } from "@/utils/performance";
 import { useEffect } from "react";
 import DashboardContent from "@/components/dashboard/sections/DashboardContent";
+import { useToast } from "@/hooks/use-toast";
+import { Json } from "@/integrations/supabase/types";
 
 const Dashboard = () => {
   const { generateWithAI } = useAI();
+  const { toast } = useToast();
 
   useEffect(() => {
     performanceMonitor.start('dashboard-load');
@@ -35,7 +38,11 @@ const Dashboard = () => {
 
         return data.map(cult => ({
           ...cult,
-          landing_page_content: cult.landing_page_content || { sections: [] }
+          landing_page_content: cult.landing_page_content ? 
+            (typeof cult.landing_page_content === 'string' ? 
+              JSON.parse(cult.landing_page_content) : 
+              cult.landing_page_content) as Cult['landing_page_content'] : 
+            { sections: [] }
         })) as Cult[];
       } finally {
         performanceMonitor.end('fetch-cults');
