@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/select";
 import { UseFormReturn } from "react-hook-form";
 import * as z from "zod";
-import { Wand2 } from "lucide-react";
+import { Wand2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 
@@ -43,6 +43,7 @@ interface FormFieldsProps {
 
 export const FormFields = ({ form, onNameEntered }: FormFieldsProps) => {
   const [showGenerateButton, setShowGenerateButton] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
   const [hasGenerated, setHasGenerated] = useState(false);
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -53,8 +54,13 @@ export const FormFields = ({ form, onNameEntered }: FormFieldsProps) => {
 
   const handleGenerateClick = async () => {
     if (onNameEntered) {
-      await onNameEntered();
-      setHasGenerated(true);
+      setIsGenerating(true);
+      try {
+        await onNameEntered();
+        setHasGenerated(true);
+      } finally {
+        setIsGenerating(false);
+      }
     }
   };
 
@@ -79,10 +85,20 @@ export const FormFields = ({ form, onNameEntered }: FormFieldsProps) => {
                 type="button"
                 variant="outline"
                 onClick={handleGenerateClick}
+                disabled={isGenerating}
                 className="mt-2 w-full border-cultGlow text-cultWhite hover:bg-cultPurple/20"
               >
-                <Wand2 className="mr-2 h-4 w-4" />
-                Generate details with AI based on name
+                {isGenerating ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Generating details...
+                  </>
+                ) : (
+                  <>
+                    <Wand2 className="mr-2 h-4 w-4" />
+                    Generate details with AI
+                  </>
+                )}
               </Button>
             )}
           </FormItem>
